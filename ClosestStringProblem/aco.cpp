@@ -75,35 +75,37 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 
 
 /** Execute aco algorithm **/
-Solution * ACO::execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    int i, improvement;
+Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
+    int i;
+    bool improvement;
     double tau_min, tau_max;
+    inst = instance;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
     int alphabet_size = inst->getAlphabetSize();
     int string_length = inst->getStringLength();
     tau_max = (double) 1 / (double) alphabet_size;
     tau_min = epsilon * tau_max;
-    double ** pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
         for (int j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
     }
     while(!termination_criterion(global_best)) {
-        improvement = 0;
+        improvement = false;
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
 //        local_search(inst, ants[i]); /// And apply local search
             if (!global_best) {
                 global_best = ants[i];
-                improvement = 1;
+                improvement = true;
                 notify_improvement(ants[i]);
             } else if (ants[i]->getSolutionQuality() <= global_best->getSolutionQuality()) {
                 if (ants[i]->getSolutionQuality() < global_best->getSolutionQuality()) notify_improvement(ants[i]);
                 delete global_best;
                 global_best = ants[i];
-                improvement = 1;
+                improvement = true;
             } else {
                 delete ants[i];
             }
