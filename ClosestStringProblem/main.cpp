@@ -9,6 +9,8 @@
 #include <iostream>
 
 #include "instance.hpp"
+#include "aco.hpp"
+#include "solution.hpp"
 
 char * instance_file=NULL;
 long int max_iterations;   //Max iterations
@@ -18,6 +20,7 @@ double rho;
 long int n_ants;
 long int seed = -1;
 double initial_pheromone=1.0;
+long int iterations = 0;
 
 void printHelp(){
     std::cout << "\nACO Usage:\n"
@@ -59,6 +62,18 @@ void printParameters(){
     << "  seed: "   << seed << "\n"
     << "  initial pheromone: "   << initial_pheromone << "\n"
     << std::endl;
+}
+
+/** Used by ils and aco to determine when to stop **/
+bool termination_criterion(Solution *sol) {
+    iterations++;
+    return iterations > 100;
+}
+
+/** Callback when better solution is encountered: write time and quality to file **/
+void notify_improvement(Solution * sol) {
+    std::cout << "New best: " << sol->getSolutionQuality() << std::endl;
+    return;
 }
 
 /* Read arguments from command line */
@@ -108,8 +123,12 @@ int main(int argc, char *argv[] ){
     if(!readArguments(argc, argv)){
         exit(1);
     }
-    Instance * instance = new Instance(instance_file);
-    instance->print();
-    
+    Instance * inst = new Instance(instance_file);
+    inst->print();
+    double epsilon = 0.005;
+    ACO * aco = new ACO(beta, rho, epsilon);
+    Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
+    std::cout << "Final solution quality: " << sol->getSolutionQuality();
+    delete sol;
     return 0;
 }

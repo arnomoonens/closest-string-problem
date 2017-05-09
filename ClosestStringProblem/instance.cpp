@@ -17,13 +17,13 @@ Instance::Instance(const char * inst_file_name) {
         error_reading_file("ERROR: there was an error reading instance file.");
     if (fscanf(instance_file,"%d",&l)!=1)
         error_reading_file("ERROR: there was an error reading instance file.");
-    
-    alphabet = new char[k];
+
+    alphabet = (char *) malloc(k * sizeof(char));
     for (int i = 0; i < k; i++) {
         if (fscanf(instance_file,"%s",&alphabet[i])!=1)
             error_reading_file("ERROR: there was an error reading instance file.");
     }
-
+    
     strings  = (char **) malloc(n*sizeof(char *));
     for (int i = 0; i < n; i++) {
         strings[i] = (char *) malloc(l*sizeof(char));
@@ -34,11 +34,12 @@ Instance::Instance(const char * inst_file_name) {
 }
 
 Instance::~Instance() {
+    std::cout << "freeing" << std::endl;
     free(alphabet);
     for (int i = 0; i < n; i++) {
-        free(strings[i]);
+        free((void *) strings[i]);
     }
-    free(strings);
+    free((void *) strings);
 }
 
 void Instance::print() {
@@ -46,7 +47,6 @@ void Instance::print() {
     << "Alphabet size: " << k << std::endl
     << "Number of strings: " << n << std::endl
     << "String length: " << l << std::endl
-    << "First alphabet character: " << alphabet[0] << std::endl
-    << "First string: " << strings[0] << std::endl;
+    << "Alphabet: " << alphabet << std::endl;
     return;
 }

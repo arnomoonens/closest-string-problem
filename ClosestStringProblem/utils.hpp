@@ -13,5 +13,6 @@
 #include <stdlib.h>
 
 void error_reading_file(const char *text);
+double ran01( long *idum ); // Random number generator
 
 #endif /* utils_hpp */

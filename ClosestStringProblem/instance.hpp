@@ -25,7 +25,11 @@ class Instance {
 public:
     Instance(const char * csp_file_name);
     ~Instance();
-    
+    int getAlphabetSize() {return k;};
+    int getNumberOfStrings() {return n;};
+    int getStringLength() {return l;};
+    char * getAlphabet() {return alphabet;};
+    char ** getStrings() {return strings;};
     void print();
 };
 
