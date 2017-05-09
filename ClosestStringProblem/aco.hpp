@@ -19,6 +19,7 @@
 typedef Solution Ant;
 
 class ACO {
+    long int seed;
     double beta;
     double rho;
     double epsilon;
@@ -28,7 +29,7 @@ class ACO {
     void construct(Ant *current_ant);
     
 public:
-    ACO(double beta, double rho, double epsilon);
+    ACO(double pbeta, double prho, double pepsilon, long int pseed);
     ~ACO();
     Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
     double heuristic_information(Ant *current_ant, int idx, char x);

@@ -126,7 +126,7 @@ int main(int argc, char *argv[] ){
     Instance * inst = new Instance(instance_file);
     inst->print();
     double epsilon = 0.005;
-    ACO * aco = new ACO(beta, rho, epsilon);
+    ACO * aco = new ACO(beta, rho, epsilon, seed);
     Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
     std::cout << "Final solution quality: " << sol->getSolutionQuality();
     delete sol;

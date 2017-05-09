@@ -8,10 +8,11 @@
 
 #include "aco.hpp"
 
-ACO::ACO(double pbeta, double prho, double pepsilon) {
+ACO::ACO(double pbeta, double prho, double pepsilon, long int pseed) {
     beta = pbeta;
     rho = prho;
     epsilon = pepsilon;
+    seed = pseed;
 }
 
 /** Heuristic information
@@ -42,8 +43,7 @@ void ACO::construct(Ant *current_ant) {
             sum_prob += pheromone_trails[j][i]*pow(heuristic_information(current_ant, i, alphabet[j]), beta);
             selection_prob[j] = sum_prob;
         }
-        long int s = 134;
-        choice = ran01(&s) * sum_prob; // TODO: fix seed
+        choice = ran01(&seed) * sum_prob; // TODO: fix seed
         char_idx = 0;
         while (choice > selection_prob[char_idx]) char_idx++;
         string_indices[i] = char_idx;
