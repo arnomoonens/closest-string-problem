@@ -8,10 +8,9 @@
 
 #include "aco.hpp"
 
-ACO::ACO(double pbeta, double prho, double pepsilon, long int pseed) {
+ACO::ACO(double pbeta, double prho, long int pseed) {
     beta = pbeta;
     rho = prho;
-    epsilon = pepsilon;
     seed = pseed;
 }
 
@@ -63,7 +62,7 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
     int * string_indices = global_best->getStringIndices();
     for (int i = 0; i < string_length; i++) {
         char_idx = string_indices[i];
-        pheromone_trails[char_idx][i] = rho * pheromone_trails[char_idx][i] + delta_tau;
+        pheromone_trails[char_idx][i] = ((1.0 - rho) * pheromone_trails[char_idx][i]) + delta_tau;
         if (pheromone_trails[char_idx][i] < tau_min) {
             pheromone_trails[char_idx][i] = tau_min;
         } else if (pheromone_trails[char_idx][i] > tau_max) {
@@ -73,19 +72,21 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
     return;
 }
 
+void ACO::local_search(Ant * ant) {
+    
+}
 
 /** Execute aco algorithm **/
 Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
     int i;
     bool improvement;
-    double tau_min, tau_max;
     inst = instance;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
     int alphabet_size = inst->getAlphabetSize();
     int string_length = inst->getStringLength();
-    tau_max = (double) 1 / (double) alphabet_size;
-    tau_min = epsilon * tau_max;
+    double tau_max = (double) 1 / (double) alphabet_size;
+    double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
@@ -112,7 +113,7 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
         }
         if (improvement) {
             tau_max = (double) 1 / (((double) 1 - rho) * (double) global_best->getSolutionQuality());
-            tau_min = epsilon * tau_max;
+            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
         }
         update_pheromone_trails(global_best, tau_min, tau_max);
     }

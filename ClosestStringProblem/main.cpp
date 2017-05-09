@@ -46,7 +46,7 @@ void setDefaultParameters(){
     beta=1.0;
     rho=0.2;
     n_ants=10;
-    max_iterations=0;
+    max_iterations=500;
     instance_file=NULL;
     seed=seed = (long int) time(NULL);
 }
@@ -67,7 +67,7 @@ void printParameters(){
 /** Used by ils and aco to determine when to stop **/
 bool termination_criterion(Solution *sol) {
     iterations++;
-    return iterations > 100;
+    return iterations > max_iterations;
 }
 
 /** Callback when better solution is encountered: write time and quality to file **/
@@ -125,8 +125,7 @@ int main(int argc, char *argv[] ){
     }
     Instance * inst = new Instance(instance_file);
     inst->print();
-    double epsilon = 0.005;
-    ACO * aco = new ACO(beta, rho, epsilon, seed);
+    ACO * aco = new ACO(beta, rho, seed);
     Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
     std::cout << "Final solution quality: " << sol->getSolutionQuality();
     delete sol;

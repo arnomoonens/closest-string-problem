@@ -22,16 +22,16 @@ class ACO {
     long int seed;
     double beta;
     double rho;
-    double epsilon;
     Instance * inst;
     double **pheromone_trails;
     
     void construct(Ant *current_ant);
     
 public:
-    ACO(double pbeta, double prho, double pepsilon, long int pseed);
+    ACO(double pbeta, double prho, long int pseed);
     ~ACO();
     Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
+    void local_search(Ant * ant);
     double heuristic_information(Ant *current_ant, int idx, char x);
     void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max);
 };
