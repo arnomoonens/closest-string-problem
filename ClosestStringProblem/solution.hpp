@@ -18,14 +18,19 @@ class Solution {
     int * string_indices;
     int * string_distances; // Distance of every instance string to the solution string
     int fx; // Solution quality = max(string_distances)
+    Instance * inst;
     
 public:
-    Solution(Instance * inst);
+    Solution(Instance * pinst);
     ~Solution();
-    void calculateSolutionQuality(Instance * inst);
+    int calculateSolutionQuality();
     int getSolutionQuality() {return fx;};
+    void setSolutionQuality(int sq) {fx = sq; return;};
     int * getStringIndices() {return string_indices;};
-    void setString(Instance * inst, int * indices);
+    char * getString() {return string;};
+    void setString(int * indices);
+    void setCharacter(int idx, char ch); // Set using position in string and character
+    void setCharacter(int idx, int char_idx); // set using position in string and character index in alphabet
 };
 
 #endif /* solution_hpp */

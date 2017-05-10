@@ -42,15 +42,16 @@ void ACO::construct(Ant *current_ant) {
             sum_prob += pheromone_trails[j][i]*pow(heuristic_information(current_ant, i, alphabet[j]), beta);
             selection_prob[j] = sum_prob;
         }
-        choice = ran01(&seed) * sum_prob; // TODO: fix seed
+        choice = ran01(&seed) * sum_prob;
         char_idx = 0;
         while (choice > selection_prob[char_idx]) char_idx++;
         string_indices[i] = char_idx;
     }
-    current_ant->setString(inst, string_indices);
+    current_ant->setString(string_indices);
     free((void *) string_indices);
     free((void *) selection_prob);
-    current_ant->calculateSolutionQuality(inst);
+    int sq = current_ant->calculateSolutionQuality();
+    current_ant->setSolutionQuality(sq);
     return;
 }
 
@@ -58,11 +59,11 @@ void ACO::construct(Ant *current_ant) {
 void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
     int char_idx;
     int string_length = inst->getStringLength();
-    double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
+//    double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
     int * string_indices = global_best->getStringIndices();
     for (int i = 0; i < string_length; i++) {
         char_idx = string_indices[i];
-        pheromone_trails[char_idx][i] = ((1.0 - rho) * pheromone_trails[char_idx][i]) + delta_tau;
+        pheromone_trails[char_idx][i] = ((1.0 - rho) * pheromone_trails[char_idx][i]) + rho * tau_max; // rho * tau_max instead of delta_tau
         if (pheromone_trails[char_idx][i] < tau_min) {
             pheromone_trails[char_idx][i] = tau_min;
         } else if (pheromone_trails[char_idx][i] > tau_max) {
@@ -73,7 +74,28 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 }
 
 void ACO::local_search(Ant * ant) {
-    
+    int sq, orig_char_idx;
+    int alphabet_size = inst->getAlphabetSize();
+//    char * alphabet = inst->getAlphabet();
+//    char * string = ant->getString();
+//    int n_strings = inst->getStringLength();
+//    char ** strings = inst->getStrings();
+    int string_length = inst->getStringLength();
+    for (int i = 0; i < string_length; i++) { // For every char in the string
+        for (int j = 0; j < alphabet_size; j++) { // For every char in the alphabet
+            orig_char_idx = ant->getStringIndices()[i];
+            if (orig_char_idx == j) continue;
+            // Check influence of change and apply if improvement
+            ant->setCharacter(i, j);
+            sq = ant->calculateSolutionQuality();
+            if (sq < ant->getSolutionQuality()) {
+                ant->setSolutionQuality(sq);
+            } else {
+                ant->setCharacter(i, orig_char_idx);
+            }
+        }
+    }
+    return;
 }
 
 /** Execute aco algorithm **/
@@ -97,7 +119,7 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
-//        local_search(inst, ants[i]); /// And apply local search
+            local_search(ants[i]); /// And apply local search
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;
@@ -112,13 +134,14 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
             }
         }
         if (improvement) {
-            tau_max = (double) 1 / (((double) 1 - rho) * (double) global_best->getSolutionQuality());
+            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
             tau_min = tau_max / ((double) alphabet_size * (double) string_length);
         }
         update_pheromone_trails(global_best, tau_min, tau_max);
     }
     // free all arrays
-//    free((void *) pheromone_trails); TODO: fix
+    for (i = 0; i < alphabet_size; i++) free((void *) pheromone_trails[i]);
+    free((void *) pheromone_trails);
     free((void *) ants);
     return global_best;
 }
