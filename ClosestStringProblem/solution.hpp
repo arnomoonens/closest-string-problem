@@ -24,8 +24,8 @@ class Solution {
 public:
     Solution(Instance * pinst);
     ~Solution();
-    int calculateSolutionQuality();
-    int calculateSolutionQuality2();
+    void calculateSolutionQuality();
+    void calculateSolutionQuality2();
     int getSolutionQuality() {return fx;};
     void setSolutionQuality(int sq) {fx = sq; return;};
     int * getStringIndices() {return string_indices;};

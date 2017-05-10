@@ -50,36 +50,40 @@ void ACO::construct(Ant *current_ant) {
     current_ant->setString(string_indices);
     free((void *) string_indices);
     free((void *) selection_prob);
-    int sq = current_ant->calculateSolutionQuality();
-    current_ant->setSolutionQuality(sq);
     return;
 }
 
 /** Updating of pheromone trails of sets **/
 void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
-    int char_idx;
     int string_length = inst->getStringLength();
 //    double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
+    double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
+    double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
+    double delta_tau;
     int * string_indices = global_best->getStringIndices();
     for (int i = 0; i < string_length; i++) {
-        char_idx = string_indices[i];
-        pheromone_trails[char_idx][i] = ((1.0 - rho) * pheromone_trails[char_idx][i]) + rho * tau_max; // rho * tau_max instead of delta_tau
-        if (pheromone_trails[char_idx][i] < tau_min) {
-            pheromone_trails[char_idx][i] = tau_min;
-        } else if (pheromone_trails[char_idx][i] > tau_max) {
-            pheromone_trails[char_idx][i] = tau_max;
+        for (int j = 0; j < inst->getAlphabetSize(); j++) {
+            delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
+            pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
+            if (pheromone_trails[j][i] < tau_min) {
+                pheromone_trails[j][i] = tau_min;
+            } else if (pheromone_trails[j][i] > tau_max) {
+                pheromone_trails[j][i] = tau_max;
+            }
         }
     }
     return;
 }
 
+
 void ACO::local_search(Ant * ant) {
-    int sq, orig_char_idx;
+    int orig_char_idx;
     int alphabet_size = inst->getAlphabetSize();
 //    char * alphabet = inst->getAlphabet();
 //    char * string = ant->getString();
 //    int n_strings = inst->getStringLength();
 //    char ** strings = inst->getStrings();
+    int orig_solq = ant->getSolutionQuality();
     int string_length = inst->getStringLength();
     for (int i = 0; i < string_length; i++) { // For every char in the string
         for (int j = 0; j < alphabet_size; j++) { // For every char in the alphabet
@@ -87,15 +91,27 @@ void ACO::local_search(Ant * ant) {
             if (orig_char_idx == j) continue;
             // Check influence of change and apply if improvement
             ant->setCharacter(i, j);
-            sq = ant->calculateSolutionQuality();
-            if (sq < ant->getSolutionQuality()) {
-                ant->setSolutionQuality(sq);
+            if (ant->getSolutionQuality() <= orig_solq) {
+                orig_solq = ant->getSolutionQuality();
             } else {
                 ant->setCharacter(i, orig_char_idx);
             }
         }
     }
     return;
+}
+
+
+//Local search v2
+void ACO::local_search2(Ant * ant) {
+    int str_dist, str_dist_n;
+    int * string_distances = ant->getStringDistances();
+    int n_strings = inst->getNumberOfStrings();
+    for (int i = 0; i < n_strings; i++) {
+        str_dist = string_distances[i];
+        str_dist_n = str_dist;
+        
+    }
 }
 
 /** Execute aco algorithm **/
@@ -133,10 +149,10 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
                 delete ants[i];
             }
         }
-        if (improvement) {
-            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
-            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
-        }
+//        if (improvement) {
+//            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
+//            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
+//        }
         update_pheromone_trails(global_best, tau_min, tau_max);
     }
     // free all arrays

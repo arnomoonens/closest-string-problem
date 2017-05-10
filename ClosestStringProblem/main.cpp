@@ -111,7 +111,7 @@ bool readArguments(int argc, char *argv[] ){
             return(false);
         }
     }
-    if(instance_file==NULL){
+    if(instance_file == NULL){
         std::cout << "No instance file provided.\n";
         return(false);
     }
@@ -129,5 +129,6 @@ int main(int argc, char *argv[] ){
     Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
     std::cout << "Final solution quality: " << sol->getSolutionQuality();
     delete sol;
+    delete inst;
     return 0;
 }

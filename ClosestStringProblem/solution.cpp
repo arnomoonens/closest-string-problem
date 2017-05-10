@@ -34,24 +34,26 @@ void Solution::setString(int * indices) {
     for (int i = 0; i < string_length; i++) {
         string[i] = alphabet[indices[i]];
     }
+    calculateSolutionQuality();
     return;
 }
 
-int Solution::calculateSolutionQuality2() {
-    int result = 0;
+void Solution::calculateSolutionQuality2() {
+    fx = 0;
     char ** strings = inst->getStrings();
     for (int i = 0; i < inst->getNumberOfStrings(); i++) {
         string_distances[i] = 0;
         for (int j = 0; j < inst->getStringLength(); j++) {
             if (string[j] != strings[i][j]) string_distances[i]++;
         }
-        if (string_distances[i] > result) result = string_distances[i];
+        if (string_distances[i] > fx) fx = string_distances[i];
     }
-    return result;
+    return;
 }
 
-int Solution::calculateSolutionQuality() {
-    int result = 0, char_idx, j, m, string_idx;
+void Solution::calculateSolutionQuality() {
+    int char_idx, j, m, string_idx;
+    fx = 0;
     int ** strings_per_char_count = inst->getStringsPerCharCount();
     int *** char_to_string = inst->getCharToString();
     for (int i = 0; i < inst->getStringLength(); i++) {
@@ -61,27 +63,41 @@ int Solution::calculateSolutionQuality() {
             for (m = 0; m < strings_per_char_count[i][j]; m++) {
                 string_idx = char_to_string[i][j][m];
                 string_distances[string_idx]++;
-                if (string_distances[string_idx] > result) result = string_distances[string_idx];
+                if (string_distances[string_idx] > fx) fx = string_distances[string_idx];
             }
-        }
-    }
-    return result;
-}
-
-void Solution::setCharacter(int idx, char ch) {
-    char * alphabet = inst->getAlphabet();
-    string[idx] = ch;
-    for (int i = 0; i < inst->getAlphabetSize(); i++) {
-        if (alphabet[i] == ch) {
-            string_indices[idx] = i;
-            break;
         }
     }
     return;
 }
 
+void Solution::setCharacter(int idx, char ch) {
+    std::cout << "Don't use this function" << std::endl;
+//    char * alphabet = inst->getAlphabet();
+//    string[idx] = ch;
+//    for (int i = 0; i < inst->getAlphabetSize(); i++) {
+//        if (alphabet[i] == ch) {
+//            string_indices[idx] = i;
+//            break;
+//        }
+//    }
+    return;
+}
+
 void Solution::setCharacter(int idx, int char_idx) {
+    int i;
+    int orig_char_idx = string_indices[idx];
     string_indices[idx] = char_idx;
+    int *** char_to_string = inst->getCharToString();
     string[idx] = inst->getAlphabet()[char_idx];
+    for (i = 0; i < inst->getStringsPerCharCount()[idx][orig_char_idx]; i++)
+        string_distances[char_to_string[idx][orig_char_idx][i]]++;
+    for (i = 0; i < inst->getStringsPerCharCount()[idx][char_idx]; i++)
+        string_distances[char_to_string[idx][char_idx][i]]--;
+    fx = 0;
+    for (i = 0; i < inst->getNumberOfStrings(); i++) {
+        if (string_distances[i] > fx) {
+            fx = string_distances[i];
+        }
+    }
     return;
 }
