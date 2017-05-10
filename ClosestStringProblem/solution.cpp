@@ -11,9 +11,10 @@
 
 Solution::Solution(Instance * pinst) {
     inst = pinst;
-    fx = 0;
+    fx = -1;
     int string_length = inst->getStringLength();
     int n_strings = inst->getNumberOfStrings();
+    string_max_dist_index = -1;
     string = (char *) malloc(string_length * sizeof(char));
     string_indices = (int *) malloc(string_length * sizeof(int));
     string_distances = (int *) malloc(n_strings * sizeof(int));
@@ -36,14 +37,31 @@ void Solution::setString(int * indices) {
     return;
 }
 
-int Solution::calculateSolutionQuality() {
+int Solution::calculateSolutionQuality2() {
     int result = 0;
     char ** strings = inst->getStrings();
+    for (int i = 0; i < inst->getNumberOfStrings(); i++) {
+        string_distances[i] = 0;
+        for (int j = 0; j < inst->getStringLength(); j++) {
+            if (string[j] != strings[i][j]) string_distances[i]++;
+        }
+        if (string_distances[i] > result) result = string_distances[i];
+    }
+    return result;
+}
+
+int Solution::calculateSolutionQuality() {
+    int result = 0, char_idx, j, m, string_idx;
+    int ** strings_per_char_count = inst->getStringsPerCharCount();
+    int *** char_to_string = inst->getCharToString();
     for (int i = 0; i < inst->getStringLength(); i++) {
-        for (int j = 0; j < inst->getNumberOfStrings(); j++) {
-            if (string[i] != strings[j][i]) {
-                string_distances[j]++;
-                if (string_distances[j] > result) result = string_distances[j];
+        char_idx = string_indices[i];
+        for (j = 0; j < inst->getAlphabetSize(); j++) {
+            if (j == char_idx) continue;
+            for (m = 0; m < strings_per_char_count[i][j]; m++) {
+                string_idx = char_to_string[i][j][m];
+                string_distances[string_idx]++;
+                if (string_distances[string_idx] > result) result = string_distances[string_idx];
             }
         }
     }
