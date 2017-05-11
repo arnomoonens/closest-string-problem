@@ -77,7 +77,7 @@ void ACO::local_search(Ant * ant) {
             if (orig_char_idx == j) continue;
             // Check influence of change and apply if improvement
             ant->setCharacter(i, j);
-            if (ant->getSolutionQuality() <= orig_solq) {
+            if (ant->getSolutionQuality() < orig_solq) { // Only apply new solution if strictly better
                 orig_solq = ant->getSolutionQuality();
             } else {
                 ant->setCharacter(i, orig_char_idx);
@@ -126,10 +126,12 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
                 improvement = true;
                 notify_improvement(ants[i]);
             } else if (ants[i]->getSolutionQuality() <= global_best->getSolutionQuality()) {
-                if (ants[i]->getSolutionQuality() < global_best->getSolutionQuality()) notify_improvement(ants[i]);
+                if (ants[i]->getSolutionQuality() < global_best->getSolutionQuality()) {
+                    notify_improvement(ants[i]);
+                    improvement = true;
+                }
                 delete global_best;
                 global_best = ants[i];
-                improvement = true;
             } else {
                 delete ants[i];
             }

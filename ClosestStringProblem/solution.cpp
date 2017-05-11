@@ -70,19 +70,6 @@ void Solution::calculateSolutionQuality() {
     return;
 }
 
-void Solution::setCharacter(int idx, char ch) {
-    std::cout << "Don't use this function" << std::endl;
-//    char * alphabet = inst->getAlphabet();
-//    string[idx] = ch;
-//    for (int i = 0; i < inst->getAlphabetSize(); i++) {
-//        if (alphabet[i] == ch) {
-//            string_indices[idx] = i;
-//            break;
-//        }
-//    }
-    return;
-}
-
 void Solution::setCharacter(int idx, int char_idx) {
     int i;
     int orig_char_idx = string_indices[idx];
@@ -99,5 +86,14 @@ void Solution::setCharacter(int idx, int char_idx) {
             fx = string_distances[i];
         }
     }
+    return;
+}
+
+void Solution::setCharacter(int idx, char ch) {
+    std::cout << "Don't use this function" << std::endl;
+    char * alphabet = inst->getAlphabet();
+    int char_idx = 0;
+    while (ch != alphabet[char_idx]) char_idx++;
+    setCharacter(idx, char_idx);
     return;
 }
