@@ -16,16 +16,16 @@ ACO::ACO(double pbeta, double prho, long int pseed) {
 
 /** Heuristic information
  Number of strings that have character x at idx **/
-double ACO::heuristic_information(Ant *current_ant, int idx, int char_idx) {
+double ACO::heuristic_information(Ant *current_ant, long int idx, long int char_idx) {
     return (double) inst->getStringsPerCharCount()[idx][char_idx];
 }
 
 /** Construction (SROM) phase of aco **/
 void ACO::construct(Ant *current_ant) {
-    int i, j, char_idx;
+    long int i, j, char_idx;
     double sum_prob, choice;
-    int string_length = inst->getStringLength();
-    int * string_indices = (int *) malloc(string_length * sizeof(int));
+    long int string_length = inst->getStringLength();
+    long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
     double * selection_prob = (double *) malloc(string_length * sizeof(double));
     for (i = 0; i < string_length; i++) { // While string is not complete yet
         sum_prob = 0;
@@ -46,14 +46,14 @@ void ACO::construct(Ant *current_ant) {
 
 /** Updating of pheromone trails of sets **/
 void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
-    int string_length = inst->getStringLength();
+    long int string_length = inst->getStringLength();
 //    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
     double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
     double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
     double delta_tau;
-    int * string_indices = global_best->getStringIndices();
-    for (int i = 0; i < string_length; i++) {
-        for (int j = 0; j < inst->getAlphabetSize(); j++) {
+    long int * string_indices = global_best->getStringIndices();
+    for (long int i = 0; i < string_length; i++) {
+        for (long int j = 0; j < inst->getAlphabetSize(); j++) {
             delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
             pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
             if (pheromone_trails[j][i] < tau_min) {
@@ -67,12 +67,12 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 }
 
 void ACO::local_search(Ant * ant) {
-    int orig_char_idx;
-    int alphabet_size = inst->getAlphabetSize();
-    int orig_solq = ant->getSolutionQuality();
-    int string_length = inst->getStringLength();
-    for (int i = 0; i < string_length; i++) { // For every char in the string
-        for (int j = 0; j < alphabet_size; j++) { // For every char in the alphabet
+    long int orig_char_idx;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int orig_solq = ant->getSolutionQuality();
+    long int string_length = inst->getStringLength();
+    for (long int i = 0; i < string_length; i++) { // For every char in the string
+        for (long int j = 0; j < alphabet_size; j++) { // For every char in the alphabet
             orig_char_idx = ant->getStringIndices()[i];
             if (orig_char_idx == j) continue;
             // Check influence of change and apply if improvement
@@ -89,10 +89,10 @@ void ACO::local_search(Ant * ant) {
 
 //Local search v2
 void ACO::local_search2(Ant * ant) {
-    int str_dist, str_dist_n;
-    int * string_distances = ant->getStringDistances();
-    int n_strings = inst->getNumberOfStrings();
-    for (int i = 0; i < n_strings; i++) {
+    long int str_dist, str_dist_n;
+    long int * string_distances = ant->getStringDistances();
+    long int n_strings = inst->getNumberOfStrings();
+    for (long int i = 0; i < n_strings; i++) {
         str_dist = string_distances[i];
         str_dist_n = str_dist;
         
@@ -101,19 +101,19 @@ void ACO::local_search2(Ant * ant) {
 
 /** Execute aco algorithm **/
 Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    int i;
+    long int i;
     bool improvement;
     inst = instance;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
-    int alphabet_size = inst->getAlphabetSize();
-    int string_length = inst->getStringLength();
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
     double tau_max = (double) 1 / (double) alphabet_size;
     double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (int j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
+        for (long int j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
     }
     while(!termination_criterion(global_best)) {
         improvement = false;

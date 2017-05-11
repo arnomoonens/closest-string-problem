@@ -15,10 +15,10 @@
 
 class Solution {
     char * string;
-    int * string_indices;
-    int * string_distances; // Distance of every instance string to the solution string
-    int string_max_dist_index;
-    int fx; // Solution quality = max(string_distances)
+    long int * string_indices;
+    long int * string_distances; // Distance of every instance string to the solution string
+    long int string_max_dist_index;
+    long int fx; // Solution quality = max(string_distances)
     Instance * inst;
     
 public:
@@ -26,14 +26,14 @@ public:
     ~Solution();
     void calculateSolutionQuality();
     void calculateSolutionQuality2();
-    int getSolutionQuality() {return fx;};
-    void setSolutionQuality(int sq) {fx = sq; return;};
-    int * getStringIndices() {return string_indices;};
-    int * getStringDistances() {return string_distances;};
+    long int getSolutionQuality() {return fx;};
+    void setSolutionQuality(long int sq) {fx = sq; return;};
+    long int * getStringIndices() {return string_indices;};
+    long int * getStringDistances() {return string_distances;};
     char * getString() {return string;};
-    void setString(int * indices);
-    void setCharacter(int idx, char ch); // Set using position in string and character
-    void setCharacter(int idx, int char_idx); // set using position in string and character index in alphabet
+    void setString(long int * indices);
+    void setCharacter(long int idx, char ch); // Set using position in string and character
+    void setCharacter(long int idx, long int char_idx); // set using position in string and character index in alphabet
 };
 
 #endif /* solution_hpp */
