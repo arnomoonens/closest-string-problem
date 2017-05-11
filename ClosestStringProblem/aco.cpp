@@ -22,8 +22,8 @@ double ACO::heuristic_information(Ant *current_ant, int idx, int char_idx) {
 
 /** Construction (SROM) phase of aco **/
 void ACO::construct(Ant *current_ant) {
-    int i, j, choice, char_idx;
-    double sum_prob;
+    int i, j, char_idx;
+    double sum_prob, choice;
     int string_length = inst->getStringLength();
     int * string_indices = (int *) malloc(string_length * sizeof(int));
     double * selection_prob = (double *) malloc(string_length * sizeof(double));
@@ -69,10 +69,6 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 void ACO::local_search(Ant * ant) {
     int orig_char_idx;
     int alphabet_size = inst->getAlphabetSize();
-//    char * alphabet = inst->getAlphabet();
-//    char * string = ant->getString();
-//    int n_strings = inst->getStringLength();
-//    char ** strings = inst->getStrings();
     int orig_solq = ant->getSolutionQuality();
     int string_length = inst->getStringLength();
     for (int i = 0; i < string_length; i++) { // For every char in the string
@@ -90,7 +86,6 @@ void ACO::local_search(Ant * ant) {
     }
     return;
 }
-
 
 //Local search v2
 void ACO::local_search2(Ant * ant) {
@@ -125,7 +120,7 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
-//            local_search(ants[i]); /// And apply local search
+            local_search(ants[i]); /// And apply local search
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;

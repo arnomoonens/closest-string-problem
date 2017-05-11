@@ -24,14 +24,13 @@ long int iterations = 0;
 
 void printHelp(){
     std::cout << "\nACO Usage:\n"
-    << "   ./aco --ants <int> --alpha <float> --beta <float> --rho <float> --tours <int> --iterations <int> --seed <int> --instance <path>\n\n"
+    << "   ./aco --ants <int> --alpha <float> --beta <float> --rho <float> --iterations <int> --seed <int> --instance <path>\n\n"
     << "Example: ./aco --tours 2000 --seed 123 --instance eil151.tsp\n\n"
     << "\nACO flags:\n"
     << "   --ants: Number of ants to build every iteration. Default=10.\n"
     << "   --alpha: Alpha parameter (float). Default=1.\n"
     << "   --beta: Beta parameter (float). Default=1.\n"
     << "   --rho: Rho parameter (float). Defaut=0.2.\n"
-    << "   --tours: Maximum number of tours to build (integer). Default=10000.\n"
     << "   --iterations: Maximum number of iterations to perform (interger). Default:0 (disabled).\n"
     << "   --seed: Number for the random seed generator.\n"
     << "   --instance: Path to the instance file\n"
@@ -71,7 +70,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-    std::cout << iterations << " " << sol->getSolutionQuality() << std::endl;
+    printf("%li %i\n", iterations, sol->getSolutionQuality());
     return;
 }
 
