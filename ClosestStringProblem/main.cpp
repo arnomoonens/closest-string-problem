@@ -66,13 +66,12 @@ void printParameters(){
 
 /** Used by ils and aco to determine when to stop **/
 bool termination_criterion(Solution *sol) {
-    iterations++;
-    return iterations > max_iterations;
+    return ++iterations > max_iterations;
 }
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-    std::cout << "New best: " << sol->getSolutionQuality() << std::endl;
+    std::cout << iterations << " " << sol->getSolutionQuality() << std::endl;
     return;
 }
 

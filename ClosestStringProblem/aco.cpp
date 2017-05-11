@@ -16,30 +16,21 @@ ACO::ACO(double pbeta, double prho, long int pseed) {
 
 /** Heuristic information
  Number of strings that have character x at idx **/
-double ACO::heuristic_information(Ant *current_ant, int idx, char x) {
-    int count = 0;
-    int n = inst->getNumberOfStrings();
-    char ** strings = inst->getStrings();
-    for (int i = 0; i < n; i++) {
-        if (strings[i][idx] == x) {
-            count++;
-        }
-    }
-    return (double) count / (double) n;
+double ACO::heuristic_information(Ant *current_ant, int idx, int char_idx) {
+    return (double) inst->getStringsPerCharCount()[idx][char_idx];
 }
 
 /** Construction (SROM) phase of aco **/
 void ACO::construct(Ant *current_ant) {
     int i, j, choice, char_idx;
-    char * alphabet = inst->getAlphabet();
-    
+    double sum_prob;
     int string_length = inst->getStringLength();
     int * string_indices = (int *) malloc(string_length * sizeof(int));
-    double sum_prob = 0;
     double * selection_prob = (double *) malloc(string_length * sizeof(double));
     for (i = 0; i < string_length; i++) { // While string is not complete yet
+        sum_prob = 0;
         for(j = 0; j < inst->getAlphabetSize(); j++) {
-            sum_prob += pheromone_trails[j][i]*pow(heuristic_information(current_ant, i, alphabet[j]), beta);
+            sum_prob += pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
             selection_prob[j] = sum_prob;
         }
         choice = ran01(&seed) * sum_prob;
@@ -56,7 +47,7 @@ void ACO::construct(Ant *current_ant) {
 /** Updating of pheromone trails of sets **/
 void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
     int string_length = inst->getStringLength();
-//    double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
+//    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
     double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
     double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
     double delta_tau;
@@ -74,7 +65,6 @@ void ACO::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
     }
     return;
 }
-
 
 void ACO::local_search(Ant * ant) {
     int orig_char_idx;
@@ -135,7 +125,7 @@ Solution * ACO::execute(Instance *instance, bool (*termination_criterion)(Soluti
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
-            local_search(ants[i]); /// And apply local search
+//            local_search(ants[i]); /// And apply local search
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;
