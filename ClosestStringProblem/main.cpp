@@ -70,7 +70,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-    printf("%li %li\n", iterations, sol->getSolutionQuality());
+//    printf("%li %li\n", iterations, sol->getSolutionQuality());
     return;
 }
 
@@ -113,7 +113,7 @@ bool readArguments(int argc, char *argv[] ){
         std::cout << "No instance file provided.\n";
         return(false);
     }
-    printParameters();
+//    printParameters();
     return(true);
 }
 
@@ -122,10 +122,10 @@ int main(int argc, char *argv[] ){
         exit(1);
     }
     Instance * inst = new Instance(instance_file);
-    inst->print();
+//    inst->print();
     ACO * aco = new ACO(beta, rho, seed);
     Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
-    std::cout << "Final solution quality: " << sol->getSolutionQuality();
+    printf("%li", sol->getSolutionQuality());
     delete sol;
     delete inst;
     return 0;
