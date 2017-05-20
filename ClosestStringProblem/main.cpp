@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "instance.hpp"
-#include "aco.hpp"
+#include "first.hpp"
 #include "solution.hpp"
 
 char * instance_file=NULL;
@@ -70,7 +70,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-//    printf("%li %li\n", iterations, sol->getSolutionQuality());
+    printf("%li %li\n", iterations, sol->getSolutionQuality());
     return;
 }
 
@@ -123,8 +123,8 @@ int main(int argc, char *argv[] ){
     }
     Instance * inst = new Instance(instance_file);
 //    inst->print();
-    ACO * aco = new ACO(beta, rho, seed);
-    Solution * sol = aco->execute(inst, termination_criterion, notify_improvement, n_ants);
+    First * first = new First(beta, rho, seed);
+    Solution * sol = first->execute(inst, termination_criterion, notify_improvement, n_ants);
     printf("%li", sol->getSolutionQuality());
     delete sol;
     delete inst;
