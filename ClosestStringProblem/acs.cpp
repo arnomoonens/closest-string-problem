@@ -24,29 +24,39 @@ double ACS::heuristic_information(Ant *current_ant, long int idx, long int char_
 /** Construction (SROM) phase of aco **/
 void ACS::construct(Ant *current_ant) {
     long int i, j, char_idx;
-    double sum_prob, choice;
+    double sum_prob, choice, q, max_character_score;
     long int string_length = inst->getStringLength();
     long int alphabet_size = inst->getAlphabetSize();
     long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
-    double * character_prob = (double *) malloc(alphabet_size * sizeof(double));
+    double * character_score = (double *) malloc(alphabet_size * sizeof(double));
     for (i = 0; i < string_length; i++) { // While string is not complete yet
         sum_prob = 0;
-        for(j = 0; j < inst->getAlphabetSize(); j++) {
-            character_prob[j] = pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
-            sum_prob += character_prob[j];
+        for(j = 0; j < alphabet_size; j++) {
+            character_score[j] = pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
+            sum_prob += character_score[j];
             selection_prob[j] = sum_prob;
         }
-        
-        choice = ran01(&seed) * sum_prob;
+        q = ran01(&seed);
         char_idx = 0;
-        while (choice > selection_prob[char_idx]) char_idx++;
+        if (q < exploitation_prob) { // Exploitation: Choose the "best" one
+            max_character_score = 0;
+            for (j = 0; j < alphabet_size; j++) {
+                if (character_score[j] > max_character_score) {
+                    max_character_score = character_score[j];
+                    char_idx = j;
+                }
+            }
+        } else { // Exploration
+            choice = ran01(&seed) * sum_prob;
+            while (choice > selection_prob[char_idx]) char_idx++;
+        }
         string_indices[i] = char_idx;
     }
     current_ant->setString(string_indices);
     free((void *) string_indices);
     free((void *) selection_prob);
-    free((void *) character_prob);
+    free((void *) character_score);
     return;
 }
 
