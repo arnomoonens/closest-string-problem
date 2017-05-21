@@ -52,8 +52,10 @@ void ACS::construct(Ant *current_ant) {
             while (choice > selection_prob[char_idx]) char_idx++;
         }
         string_indices[i] = char_idx;
+        pheromone_trails[char_idx][i] = (1 - rho) * pheromone_trails[char_idx][i] + rho * tau_init;
     }
     current_ant->setString(string_indices);
+    
     free((void *) string_indices);
     free((void *) selection_prob);
     free((void *) character_score);
@@ -83,7 +85,7 @@ void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 
 /** Execute aco algorithm **/
 Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    long int i;
+    long int i, j;
     bool improvement;
     inst = instance;
     Ant *global_best = NULL;
@@ -93,9 +95,10 @@ Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Soluti
     double tau_max = (double) 1 / (double) alphabet_size;
     double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    tau_init = 1.0; // 1.0 as in the paper (instead of tau_max)
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (long int j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
+        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_init;
     }
     while(!termination_criterion(global_best)) {
         improvement = false;

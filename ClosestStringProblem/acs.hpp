@@ -16,6 +16,7 @@
 
 class ACS : public ACO {
     double exploitation_prob;
+    double tau_init;
     
     void construct(Ant *current_ant);
     void local_search(Ant * ant);
