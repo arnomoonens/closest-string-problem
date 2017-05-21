@@ -62,25 +62,24 @@ void ACS::construct(Ant *current_ant) {
 
 /** Updating of pheromone trails of sets **/
 void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
+    long int char_idx;
     long int string_length = inst->getStringLength();
     //    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
-    double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
-    double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
-    double delta_tau;
+    double delta_tau = rho * tau_max;
     long int * string_indices = global_best->getStringIndices();
-    for (long int i = 0; i < string_length; i++) {
-        for (long int j = 0; j < inst->getAlphabetSize(); j++) {
-            delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
-            pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
-            if (pheromone_trails[j][i] < tau_min) {
-                pheromone_trails[j][i] = tau_min;
-            } else if (pheromone_trails[j][i] > tau_max) {
-                pheromone_trails[j][i] = tau_max;
-            }
-        }
+    for (int i = 0; i < string_length; i++) {
+        char_idx = string_indices[i];
+        pheromone_trails[char_idx][i] = (1.0 - rho) * pheromone_trails[char_idx][i] + delta_tau;
+        // Should the trails be limited or not?
+        //        if (pheromone_trails[char_idx][i] < tau_min) {
+        //            pheromone_trails[char_idx][i] = tau_min;
+        //        } else if (pheromone_trails[char_idx][i] > tau_max) {
+        //            pheromone_trails[char_idx][i] = tau_max;
+        //        }
     }
     return;
 }
+
 
 /** Execute aco algorithm **/
 Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {

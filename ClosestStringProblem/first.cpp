@@ -26,11 +26,12 @@ void First::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice;
     long int string_length = inst->getStringLength();
+    long int alphabet_size = inst->getAlphabetSize();
     long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
-    double * selection_prob = (double *) malloc(string_length * sizeof(double));
+    double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
     for (i = 0; i < string_length; i++) { // While string is not complete yet
         sum_prob = 0;
-        for(j = 0; j < inst->getAlphabetSize(); j++) {
+        for(j = 0; j < alphabet_size; j++) {
             sum_prob += pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
             selection_prob[j] = sum_prob;
         }
@@ -47,6 +48,7 @@ void First::construct(Ant *current_ant) {
 
 /** Updating of pheromone trails of sets **/
 void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
+    long int j;
     long int string_length = inst->getStringLength();
 //    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
     double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
@@ -54,7 +56,7 @@ void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau
     double delta_tau;
     long int * string_indices = global_best->getStringIndices();
     for (long int i = 0; i < string_length; i++) {
-        for (long int j = 0; j < inst->getAlphabetSize(); j++) {
+        for (j = 0; j < inst->getAlphabetSize(); j++) {
             delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
             pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
             if (pheromone_trails[j][i] < tau_min) {
@@ -68,12 +70,12 @@ void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau
 }
 
 void First::local_search(Ant * ant) {
-    long int orig_char_idx;
+    long int orig_char_idx, j;
     long int alphabet_size = inst->getAlphabetSize();
     long int orig_solq = ant->getSolutionQuality();
     long int string_length = inst->getStringLength();
     for (long int i = 0; i < string_length; i++) { // For every char in the string
-        for (long int j = 0; j < alphabet_size; j++) { // For every char in the alphabet
+        for (j = 0; j < alphabet_size; j++) { // For every char in the alphabet
             orig_char_idx = ant->getStringIndices()[i];
             if (orig_char_idx == j) continue;
             // Check influence of change and apply if improvement

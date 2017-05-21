@@ -57,7 +57,7 @@ void setDefaultParameters(){
     instance_file=NULL;
     seed=seed = (long int) time(NULL);
     use_local_search = false;
-    exploitation_prob = 0.5;
+    exploitation_prob = 0.9;
     algorithm = (char *) "first";
 }
 
