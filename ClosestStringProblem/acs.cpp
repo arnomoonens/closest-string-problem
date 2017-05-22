@@ -8,8 +8,9 @@
 
 #include "acs.hpp"
 
-ACS::ACS(double pbeta, double prho, double pexploitation_prob, long int pseed) : ACO(pbeta, prho, pseed) {
+ACS::ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed) : ACO(pbeta, prho, pseed) {
     exploitation_prob = pexploitation_prob;
+    use_local_search = puse_local_search;
 }
 
 ACS::~ACS() {
@@ -18,10 +19,10 @@ ACS::~ACS() {
 /** Heuristic information
  Number of strings that have character x at idx **/
 double ACS::heuristic_information(Ant *current_ant, long int idx, long int char_idx) {
-    return (double) inst->getStringsPerCharCount()[idx][char_idx];
+    return (double) inst->getStringsPerCharCount()[idx][char_idx] / (double) inst->getNumberOfStrings();
 }
 
-/** Construction (SROM) phase of aco **/
+/** Construction phase **/
 void ACS::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice, q, max_character_score;
@@ -30,7 +31,7 @@ void ACS::construct(Ant *current_ant) {
     long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
     double * character_score = (double *) malloc(alphabet_size * sizeof(double));
-    for (i = 0; i < string_length; i++) { // While string is not complete yet
+    for (i = 0; i < string_length; i++) { // For every position in the new string
         sum_prob = 0;
         for(j = 0; j < alphabet_size; j++) {
             character_score[j] = pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
@@ -66,22 +67,42 @@ void ACS::construct(Ant *current_ant) {
 void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
     long int char_idx;
     long int string_length = inst->getStringLength();
-    //    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
-    double delta_tau = rho * tau_max;
+        double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
+//    double delta_tau = (double) 1.0 / (double) global_best->getSolutionQuality();
     long int * string_indices = global_best->getStringIndices();
     for (int i = 0; i < string_length; i++) {
         char_idx = string_indices[i];
         pheromone_trails[char_idx][i] = (1.0 - rho) * pheromone_trails[char_idx][i] + delta_tau;
         // Should the trails be limited or not?
-        //        if (pheromone_trails[char_idx][i] < tau_min) {
-        //            pheromone_trails[char_idx][i] = tau_min;
-        //        } else if (pheromone_trails[char_idx][i] > tau_max) {
-        //            pheromone_trails[char_idx][i] = tau_max;
-        //        }
+//                if (pheromone_trails[char_idx][i] < tau_min) {
+//                    pheromone_trails[char_idx][i] = tau_min;
+//                } else if (pheromone_trails[char_idx][i] > tau_max) {
+//                    pheromone_trails[char_idx][i] = tau_max;
+//                }
     }
     return;
 }
 
+void ACS::local_search(Ant * ant) {
+    long int orig_char_idx, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int orig_solq = ant->getSolutionQuality();
+    long int string_length = inst->getStringLength();
+    for (long int i = 0; i < string_length; i++) { // For every char in the string
+        for (j = 0; j < alphabet_size; j++) { // For every char in the alphabet
+            orig_char_idx = ant->getStringIndices()[i];
+            if (orig_char_idx == j) continue;
+            // Check influence of change and apply if improvement
+            ant->setCharacter(i, j);
+            if (ant->getSolutionQuality() < orig_solq) { // Only apply new solution if strictly better
+                orig_solq = ant->getSolutionQuality();
+            } else {
+                ant->setCharacter(i, orig_char_idx);
+            }
+        }
+    }
+    return;
+}
 
 /** Execute aco algorithm **/
 Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
@@ -105,6 +126,7 @@ Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Soluti
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
+            local_search(ants[i]);
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;

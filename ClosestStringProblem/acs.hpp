@@ -16,16 +16,16 @@
 
 class ACS : public ACO {
     double exploitation_prob;
+    bool use_local_search;
     double tau_init;
     
     void construct(Ant *current_ant);
     void local_search(Ant * ant);
-    void local_search2(Ant * ant);
     double heuristic_information(Ant *current_ant, long int idx, long int char_idx);
     void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max);
     
 public:
-    ACS(double pbeta, double prho, double pexploitation_prob, long int pseed);
+    ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed);
     ~ACS();
     Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
 };
