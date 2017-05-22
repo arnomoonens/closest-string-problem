@@ -82,7 +82,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-    printf("%li %li\n", iterations, sol->getSolutionQuality());
+//    printf("%li %li\n", iterations, sol->getSolutionQuality());
     return;
 }
 
@@ -147,7 +147,7 @@ int main(int argc, char *argv[] ){
     if (strcmp(algorithm, "first") == 0) {
         algo = new First(beta, rho, seed, use_local_search);
     } else {
-        algo = new ACS(beta, rho, exploitation_prob, seed);
+        algo = new ACS(beta, rho, exploitation_prob, use_local_search, seed);
     }
     Solution * sol = algo->execute(inst, termination_criterion, notify_improvement, n_ants);
     printf("%li", sol->getSolutionQuality());

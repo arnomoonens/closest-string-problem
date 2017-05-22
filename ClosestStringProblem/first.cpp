@@ -21,7 +21,7 @@ double First::heuristic_information(Ant *current_ant, long int idx, long int cha
     return (double) inst->getStringsPerCharCount()[idx][char_idx];
 }
 
-/** Construction (SROM) phase of aco **/
+/** Construction phase **/
 void First::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice;
@@ -29,7 +29,7 @@ void First::construct(Ant *current_ant) {
     long int alphabet_size = inst->getAlphabetSize();
     long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
-    for (i = 0; i < string_length; i++) { // While string is not complete yet
+    for (i = 0; i < string_length; i++) { // For every position in the new string
         sum_prob = 0;
         for(j = 0; j < alphabet_size; j++) {
             sum_prob += pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
