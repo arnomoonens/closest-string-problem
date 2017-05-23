@@ -66,17 +66,6 @@ void ACS::construct(Ant *current_ant) {
     return;
 }
 
-void ACS::calculate_probability() {
-    long int i, j;
-    long int alphabet_size = inst->getAlphabetSize();
-    long int string_length = inst->getStringLength();
-    for (i = 0; i < alphabet_size; i++) {
-        for (j = 0; j < string_length; j++) {
-            probability[i][j] = pheromone_trails[i][j] * pow(heuristic_information(j, i), beta);
-        }
-    }
-}
-
 /** Updating of pheromone trails of sets **/
 void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
     long int char_idx;

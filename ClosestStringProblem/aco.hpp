@@ -10,6 +10,7 @@
 #define aco_hpp
 
 #include <stdio.h>
+#include <math.h>
 
 #include "instance.hpp"
 #include "solution.hpp"
@@ -31,7 +32,7 @@ protected:
          /** Number of strings that have character x at idx **/
         return (double) inst->getStringsPerCharCount()[idx][char_idx] / (double) inst->getNumberOfStrings();
     };
-    virtual void calculate_probability() = 0;
+    void calculate_probability();
     virtual void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) = 0;
 
 public:
