@@ -30,7 +30,7 @@ protected:
     virtual void construct(Ant *current_ant) = 0;
     double heuristic_information(long int idx, long int char_idx) {
          /** Number of strings that have character x at idx **/
-        return (double) inst->getStringsPerCharCount()[idx][char_idx] / (double) inst->getNumberOfStrings();
+        return (double) inst->getStringsPerCharCount()[idx][char_idx];
     };
     void calculate_probability();
     virtual void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) = 0;
