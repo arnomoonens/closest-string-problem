@@ -11,6 +11,7 @@ if (length(args)<2) {
 
 results.folder <- args[1]
 optimals <- read.table(file=args[2], header=TRUE, sep=";") 
+upb <- optimals[,"ub"]
 
 first.results.file <- paste0(results.folder, "/first.txt")
 acs.results.file <- paste0(results.folder, "/acs.txt")
@@ -20,7 +21,7 @@ colnames(first.results) <- c("Instance", 1:10)
 rownames(first.results) <- first.results$Instance
 first.results$Instance <- NULL
 
-cs.results <- read.csv(acs.results.file, header = FALSE)
+acs.results <- read.csv(acs.results.file, header = FALSE)
 colnames(acs.results) <- c("Instance", 1:10)
 rownames(acs.results) <- acs.results$Instance
 acs.results$Instance <- NULL
@@ -41,6 +42,10 @@ acs.stats <- data.frame(
 )
 
 rpd <- function(x) ((x - upb) * 100) / upb
+
+# Relative percentage deviation (between mean and upper best) for both algorithms
+rpd(first.stats[,"M"])
+rpd(acs.stats[,"M"])
 
 # Wilcoxon test
 wilcox.test(first.stats[,"M"], acs.stats[,"M"])

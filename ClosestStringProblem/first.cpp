@@ -15,35 +15,47 @@ First::First(double pbeta, double prho, long int pseed, bool puse_local_search) 
 First::~First() {
 }
 
-/** Heuristic information
- Number of strings that have character x at idx **/
-double First::heuristic_information(Ant *current_ant, long int idx, long int char_idx) {
-    return (double) inst->getStringsPerCharCount()[idx][char_idx];
-}
-
 /** Construction phase **/
 void First::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice;
     long int string_length = inst->getStringLength();
+    char * alphabet = inst->getAlphabet();
     long int alphabet_size = inst->getAlphabetSize();
-    long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
+    long int number_of_strings = inst->getNumberOfStrings();
+    long int * string_distances = current_ant->getStringDistances();
+    char ** strings = inst->getStrings();
+    long int * string_indices = current_ant->getStringIndices();
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
     for (i = 0; i < string_length; i++) { // For every position in the new string
         sum_prob = 0;
         for(j = 0; j < alphabet_size; j++) {
-            sum_prob += pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
+            sum_prob += probability[j][i];
             selection_prob[j] = sum_prob;
         }
         choice = ran01(&seed) * sum_prob;
         char_idx = 0;
         while (choice > selection_prob[char_idx]) char_idx++;
         string_indices[i] = char_idx;
+        char ch = alphabet[char_idx];
+        for (j = 0; j < number_of_strings; j++) {
+            if(strings[j][i] != ch) string_distances[j]++;
+        }
     }
-    current_ant->setString(string_indices);
-    free((void *) string_indices);
+    current_ant->calculateSolutionQuality();
     free((void *) selection_prob);
     return;
+}
+
+void First::calculate_probability() {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    for (i = 0; i < alphabet_size; i++) {
+        for (j = 0; j < string_length; j++) {
+            probability[i][j] = pheromone_trails[i][j] * pow(heuristic_information(j, i), beta);
+        }
+    }
 }
 
 /** Updating of pheromone trails of sets **/
@@ -64,6 +76,7 @@ void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau
             } else if (pheromone_trails[j][i] > tau_max) {
                 pheromone_trails[j][i] = tau_max;
             }
+            probability[j][i] = pheromone_trails[j][i] * pow(heuristic_information(i, j), beta); // Update probabilities
         }
     }
     return;
@@ -104,7 +117,7 @@ void First::local_search2(Ant * ant) {
 
 /** Execute aco algorithm **/
 Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    long int i;
+    long int i, j;
     bool improvement;
     inst = instance;
     Ant *global_best = NULL;
@@ -114,9 +127,11 @@ Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solu
     double tau_max = (double) 1 / (double) alphabet_size;
     double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    probability = (double **) malloc(alphabet_size * sizeof(double *));
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (long int j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
+        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
+        probability[i] = (double *) malloc(string_length * sizeof(double));
     }
     while(!termination_criterion(global_best)) {
         improvement = false;
@@ -146,8 +161,12 @@ Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solu
         update_pheromone_trails(global_best, tau_min, tau_max);
     }
     // free all arrays
-    for (i = 0; i < alphabet_size; i++) free((void *) pheromone_trails[i]);
+    for (i = 0; i < alphabet_size; i++) {
+        free((void *) pheromone_trails[i]);
+        free((void *) probability[i]);
+    }
     free((void *) pheromone_trails);
+    free((void *) probability);
     free((void *) ants);
     return global_best;
 }

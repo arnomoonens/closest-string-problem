@@ -82,7 +82,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-//    printf("%li %li\n", iterations, sol->getSolutionQuality());
+    printf("%li %li\n", iterations, sol->getSolutionQuality());
     return;
 }
 

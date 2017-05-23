@@ -24,9 +24,14 @@ protected:
     double rho;
     Instance * inst;
     double **pheromone_trails;
+    double ** probability;
     
     virtual void construct(Ant *current_ant) = 0;
-    virtual double heuristic_information(Ant *current_ant, long int idx, long int char_idx) = 0;
+    double heuristic_information(long int idx, long int char_idx) {
+         /** Number of strings that have character x at idx **/
+        return (double) inst->getStringsPerCharCount()[idx][char_idx] / (double) inst->getNumberOfStrings();
+    };
+    virtual void calculate_probability() = 0;
     virtual void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) = 0;
 
 public:

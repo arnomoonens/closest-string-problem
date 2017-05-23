@@ -16,25 +16,23 @@ ACS::ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_s
 ACS::~ACS() {
 }
 
-/** Heuristic information
- Number of strings that have character x at idx **/
-double ACS::heuristic_information(Ant *current_ant, long int idx, long int char_idx) {
-    return (double) inst->getStringsPerCharCount()[idx][char_idx] / (double) inst->getNumberOfStrings();
-}
-
 /** Construction phase **/
 void ACS::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice, q, max_character_score;
     long int string_length = inst->getStringLength();
+    char * alphabet = inst->getAlphabet();
     long int alphabet_size = inst->getAlphabetSize();
-    long int * string_indices = (long int *) malloc(string_length * sizeof(long int));
+    char ** strings = inst->getStrings();
+    long int number_of_strings = inst->getNumberOfStrings();
+    long int * string_indices = current_ant->getStringIndices();
+    long int * string_distances = current_ant->getStringDistances();
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
     double * character_score = (double *) malloc(alphabet_size * sizeof(double));
     for (i = 0; i < string_length; i++) { // For every position in the new string
         sum_prob = 0;
         for(j = 0; j < alphabet_size; j++) {
-            character_score[j] = pheromone_trails[j][i] * pow(heuristic_information(current_ant, i, j), beta);
+            character_score[j] = probability[j][i];
             sum_prob += character_score[j];
             selection_prob[j] = sum_prob;
         }
@@ -53,14 +51,30 @@ void ACS::construct(Ant *current_ant) {
             while (choice > selection_prob[char_idx]) char_idx++;
         }
         string_indices[i] = char_idx;
+        char ch = alphabet[char_idx];
+        for (j = 0; j < number_of_strings; j++) {
+            if(strings[j][i] != ch) string_distances[j]++;
+        }
+
+        // Local pheromone update rule
         pheromone_trails[char_idx][i] = (1 - rho) * pheromone_trails[char_idx][i] + rho * tau_init;
+        probability[char_idx][i] = pheromone_trails[char_idx][i] * pow(heuristic_information(i, char_idx), beta);
     }
-    current_ant->setString(string_indices);
-    
-    free((void *) string_indices);
+    current_ant->calculateSolutionQuality();
     free((void *) selection_prob);
     free((void *) character_score);
     return;
+}
+
+void ACS::calculate_probability() {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    for (i = 0; i < alphabet_size; i++) {
+        for (j = 0; j < string_length; j++) {
+            probability[i][j] = pheromone_trails[i][j] * pow(heuristic_information(j, i), beta);
+        }
+    }
 }
 
 /** Updating of pheromone trails of sets **/
@@ -79,6 +93,7 @@ void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_m
 //                } else if (pheromone_trails[char_idx][i] > tau_max) {
 //                    pheromone_trails[char_idx][i] = tau_max;
 //                }
+        probability[char_idx][i] = pheromone_trails[char_idx][i] * pow(heuristic_information(i, char_idx), beta); // Update probabilities
     }
     return;
 }
@@ -115,18 +130,21 @@ Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Soluti
     long int string_length = inst->getStringLength();
     double tau_max = (double) 1 / (double) alphabet_size;
     double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
-    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
     tau_init = 1.0; // 1.0 as in the paper (instead of tau_max)
+    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    probability = (double **) malloc(alphabet_size * sizeof(double *));
     for (i = 0; i < alphabet_size; i++) {
         pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_init;
+        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
+        probability[i] = (double *) malloc(string_length * sizeof(double));
     }
+    calculate_probability();
     while(!termination_criterion(global_best)) {
         improvement = false;
         for (i = 0; i < nants; i++) { // For each ant...
             ants[i] = new Ant(inst);
             construct(ants[i]); // Construct a solution...
-            local_search(ants[i]);
+            if (use_local_search) local_search(ants[i]); // Apply local search if needed
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;

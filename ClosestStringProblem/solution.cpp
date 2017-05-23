@@ -34,24 +34,23 @@ void Solution::setString(long int * indices) {
     for (long int i = 0; i < string_length; i++) {
         string[i] = alphabet[indices[i]];
     }
-    calculateSolutionQuality();
     return;
 }
 
-void Solution::calculateSolutionQuality2() {
+void Solution::calculateSolutionQuality() {
     fx = 0;
-    char ** strings = inst->getStrings();
+//    char ** strings = inst->getStrings();
     for (long int i = 0; i < inst->getNumberOfStrings(); i++) {
-        string_distances[i] = 0;
-        for (long int j = 0; j < inst->getStringLength(); j++) {
-            if (string[j] != strings[i][j]) string_distances[i]++;
-        }
+//        string_distances[i] = 0;
+//        for (long int j = 0; j < inst->getStringLength(); j++) {
+//            if (string[j] != strings[i][j]) string_distances[i]++;
+//        }
         if (string_distances[i] > fx) fx = string_distances[i];
     }
     return;
 }
 
-void Solution::calculateSolutionQuality() {
+void Solution::calculateSolutionQuality2() {
     long int char_idx, j, m, string_idx;
     fx = 0;
     long int ** strings_per_char_count = inst->getStringsPerCharCount();

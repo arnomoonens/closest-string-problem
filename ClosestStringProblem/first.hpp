@@ -26,7 +26,7 @@ class First : public ACO {
     void construct(Ant *current_ant);
     void local_search(Ant * ant);
     void local_search2(Ant * ant);
-    double heuristic_information(Ant *current_ant, long int idx, long int char_idx);
+    void calculate_probability();
     void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max);
 
 public:
