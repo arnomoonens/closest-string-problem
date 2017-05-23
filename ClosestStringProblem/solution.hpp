@@ -24,8 +24,6 @@ class Solution {
 public:
     Solution(Instance * pinst);
     ~Solution();
-    void calculateSolutionQuality();
-    void calculateSolutionQuality2();
     long int getSolutionQuality() {return fx;};
     void setSolutionQuality(long int sq) {fx = sq; return;};
     long int * getStringIndices() {return string_indices;};
@@ -33,7 +31,6 @@ public:
     char * getString() {return string;};
     void setString(long int * indices);
     void addCharacter(long int idx, long int char_idx);
-    void addCharacter2(long int idx, long int char_idx);
     void setCharacter(long int idx, char ch); // Set using position in string and character
     void setCharacter(long int idx, long int char_idx); // set using position in string and character index in alphabet
 };

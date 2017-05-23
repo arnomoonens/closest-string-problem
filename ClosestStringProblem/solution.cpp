@@ -37,41 +37,6 @@ void Solution::setString(long int * indices) {
     return;
 }
 
-void Solution::calculateSolutionQuality() {
-    fx = 0;
-//    char ** strings = inst->getStrings();
-    for (long int i = 0; i < inst->getNumberOfStrings(); i++) {
-//        string_distances[i] = 0;
-//        for (long int j = 0; j < inst->getStringLength(); j++) {
-//            if (string[j] != strings[i][j]) string_distances[i]++;
-//        }
-        if (string_distances[i] > fx) fx = string_distances[i];
-    }
-    return;
-}
-
-void Solution::calculateSolutionQuality2() {
-    long int char_idx, j, m, string_idx;
-    fx = 0;
-    long int ** strings_per_char_count = inst->getStringsPerCharCount();
-    long int *** char_to_string = inst->getCharToString();
-    long int string_length = inst->getStringLength();
-    long int alphabet_size = inst->getAlphabetSize();
-    for (long int i = 0; i < string_length; i++) {
-        char_idx = string_indices[i];
-        for (j = 0; j < alphabet_size; j++) {
-            if (j == char_idx) continue;
-            for (m = 0; m < strings_per_char_count[i][j]; m++) {
-                string_idx = char_to_string[i][j][m];
-                string_distances[string_idx]++;
-                if (string_distances[string_idx] > fx) fx = string_distances[string_idx];
-            }
-        }
-    }
-    return;
-}
-
-
 /** Add a character to the solution **/
 void Solution::addCharacter(long int idx, long int char_idx) {
     long int number_of_strings = inst->getNumberOfStrings();
@@ -83,26 +48,6 @@ void Solution::addCharacter(long int idx, long int char_idx) {
         if(strings[i][idx] != ch) {
             string_distances[i]++;
             if (string_distances[i] > fx) fx = string_distances[i];
-        }
-    }
-    return;
-}
-
-/** Add a character to the solution **/
-void Solution::addCharacter2(long int idx, long int char_idx) {
-    long int i, j, string_idx;
-    long int alphabet_size = inst->getAlphabetSize();
-    long int ** strings_per_char_count = inst->getStringsPerCharCount();
-    long int *** char_to_string = inst->getCharToString();
-    string_indices[idx] = char_idx;
-    char ch = inst->getAlphabet()[char_idx];
-    string[idx] = ch;
-    for (i = 0; i < alphabet_size; i++) {
-        if(i == char_idx) continue;
-        for (j = 0; j < strings_per_char_count[idx][i]; j++) {
-            string_idx = char_to_string[idx][i][j];
-            string_distances[string_idx]++;
-            if (string_distances[string_idx] > fx) fx = string_distances[string_idx];
         }
     }
     return;
