@@ -20,12 +20,7 @@ void First::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice;
     long int string_length = inst->getStringLength();
-    char * alphabet = inst->getAlphabet();
     long int alphabet_size = inst->getAlphabetSize();
-    long int number_of_strings = inst->getNumberOfStrings();
-    long int * string_distances = current_ant->getStringDistances();
-    char ** strings = inst->getStrings();
-    long int * string_indices = current_ant->getStringIndices();
     double * selection_prob = (double *) malloc(alphabet_size * sizeof(double));
     for (i = 0; i < string_length; i++) { // For every position in the new string
         sum_prob = 0;
@@ -36,13 +31,8 @@ void First::construct(Ant *current_ant) {
         choice = ran01(&seed) * sum_prob;
         char_idx = 0;
         while (choice > selection_prob[char_idx]) char_idx++;
-        string_indices[i] = char_idx;
-        char ch = alphabet[char_idx];
-        for (j = 0; j < number_of_strings; j++) {
-            if(strings[j][i] != ch) string_distances[j]++;
-        }
+        current_ant->addCharacter(i, char_idx);
     }
-    current_ant->calculateSolutionQuality();
     free((void *) selection_prob);
     return;
 }
@@ -51,13 +41,14 @@ void First::construct(Ant *current_ant) {
 void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
     long int j;
     long int string_length = inst->getStringLength();
+    long int alphabet_size = inst->getAlphabetSize();
 //    double delta_tau_max = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
     double delta_tau_max = rho * tau_max; // rho * tau_max instead of the one above
     double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
     double delta_tau;
     long int * string_indices = global_best->getStringIndices();
     for (long int i = 0; i < string_length; i++) {
-        for (j = 0; j < inst->getAlphabetSize(); j++) {
+        for (j = 0; j < alphabet_size; j++) {
             delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
             pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
             if (pheromone_trails[j][i] < tau_min) {

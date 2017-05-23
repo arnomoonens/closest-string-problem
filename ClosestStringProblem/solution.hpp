@@ -32,6 +32,8 @@ public:
     long int * getStringDistances() {return string_distances;};
     char * getString() {return string;};
     void setString(long int * indices);
+    void addCharacter(long int idx, long int char_idx);
+    void addCharacter2(long int idx, long int char_idx);
     void setCharacter(long int idx, char ch); // Set using position in string and character
     void setCharacter(long int idx, long int char_idx); // set using position in string and character index in alphabet
 };

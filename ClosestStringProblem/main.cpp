@@ -82,7 +82,9 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
+#if DEBUG
     printf("%li %li\n", iterations, sol->getSolutionQuality());
+#endif
     return;
 }
 
