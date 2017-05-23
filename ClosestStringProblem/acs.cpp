@@ -46,17 +46,20 @@ void ACS::construct(Ant *current_ant) {
             while (choice > selection_prob[char_idx]) char_idx++;
         }
         current_ant->addCharacter(i, char_idx);
-        // Local pheromone update rule
-        pheromone_trails[char_idx][i] = (1 - rho) * pheromone_trails[char_idx][i] + rho * tau_init;
-        probability[char_idx][i] = pheromone_trails[char_idx][i] * pow(heuristic_information(i, char_idx), beta);
+        local_pheromone_update(current_ant, i, char_idx);
     }
     free((void *) selection_prob);
     free((void *) character_score);
     return;
 }
 
+void ACS::local_pheromone_update(Ant *current_ant, long int idx, long int char_idx) {
+    pheromone_trails[char_idx][idx] = (1 - rho) * pheromone_trails[char_idx][idx] + rho * tau_init;
+    probability[char_idx][idx] = pheromone_trails[char_idx][idx] * pow(heuristic_information(idx, char_idx), beta);
+}
+
 /** Updating of pheromone trails of sets **/
-void ACS::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
+void ACS::global_pheromone_update(Ant *global_best) {
     long int char_idx;
     long int string_length = inst->getStringLength();
         double delta_tau = (double) 1 - ((double) global_best->getSolutionQuality() / (double) string_length);
@@ -107,7 +110,7 @@ Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Soluti
     long int alphabet_size = inst->getAlphabetSize();
     long int string_length = inst->getStringLength();
     double tau_max = (double) 1 / (double) alphabet_size;
-    double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
+//    double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     tau_init = 1.0; // 1.0 as in the paper (instead of tau_max)
     pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
     probability = (double **) malloc(alphabet_size * sizeof(double *));
@@ -142,7 +145,7 @@ Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Soluti
         //            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
         //            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
         //        }
-        update_pheromone_trails(global_best, tau_min, tau_max);
+        global_pheromone_update(global_best);
     }
     // free all arrays
     for (i = 0; i < alphabet_size; i++) free((void *) pheromone_trails[i]);

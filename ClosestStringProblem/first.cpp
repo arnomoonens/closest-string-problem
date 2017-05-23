@@ -38,7 +38,7 @@ void First::construct(Ant *current_ant) {
 }
 
 /** Updating of pheromone trails of sets **/
-void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) {
+void First::global_pheromone_update(Ant *global_best, double tau_min, double tau_max) {
     long int j;
     long int string_length = inst->getStringLength();
     long int alphabet_size = inst->getAlphabetSize();
@@ -47,10 +47,11 @@ void First::update_pheromone_trails(Ant *global_best, double tau_min, double tau
     double delta_tau_min = rho * tau_min; // rho * tau_max instead of the one above
     double delta_tau;
     long int * string_indices = global_best->getStringIndices();
+    double evaporation = 1.0 - rho;
     for (long int i = 0; i < string_length; i++) {
         for (j = 0; j < alphabet_size; j++) {
             delta_tau = (string_indices[i] == j) ? delta_tau_max : delta_tau_min;
-            pheromone_trails[j][i] = ((1.0 - rho) * pheromone_trails[j][i]) + delta_tau;
+            pheromone_trails[j][i] = (evaporation * pheromone_trails[j][i]) + delta_tau;
             if (pheromone_trails[j][i] < tau_min) {
                 pheromone_trails[j][i] = tau_min;
             } else if (pheromone_trails[j][i] > tau_max) {
@@ -138,7 +139,7 @@ Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solu
 //            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
 //            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
 //        }
-        update_pheromone_trails(global_best, tau_min, tau_max);
+        global_pheromone_update(global_best, tau_min, tau_max);
     }
     // free all arrays
     for (i = 0; i < alphabet_size; i++) {

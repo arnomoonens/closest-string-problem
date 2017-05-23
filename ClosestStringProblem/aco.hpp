@@ -33,7 +33,7 @@ protected:
         return (double) inst->getStringsPerCharCount()[idx][char_idx];
     };
     void calculate_probability();
-    virtual void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max) = 0;
+    void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 
 public:
     ACO(double pbeta, double prho, long int pseed);

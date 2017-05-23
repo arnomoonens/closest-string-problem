@@ -21,7 +21,8 @@ class ACS : public ACO {
     
     void construct(Ant *current_ant);
     void local_search(Ant * ant);
-    void update_pheromone_trails(Ant *global_best, double tau_min, double tau_max);
+    void local_pheromone_update(Ant *global_best, long int idx, long int char_idx);
+    void global_pheromone_update(Ant *global_best);
     
 public:
     ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed);
