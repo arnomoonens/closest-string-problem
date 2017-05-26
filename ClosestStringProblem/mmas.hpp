@@ -19,7 +19,7 @@
 
 typedef Solution Ant;
 
-class First : public ACO {
+class MMAS : public ACO {
     
     bool use_local_search;
     
@@ -29,8 +29,8 @@ class First : public ACO {
     void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 
 public:
-    First(double pbeta, double prho, long int pseed, bool puse_local_search);
-    ~First();
+    MMAS(double pbeta, double prho, long int pseed, bool puse_local_search);
+    ~MMAS();
     Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
 };
 

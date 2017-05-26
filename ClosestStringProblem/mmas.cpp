@@ -6,17 +6,17 @@
 //  Copyright © 2017 Arno Moonens. All rights reserved.
 //
 
-#include "first.hpp"
+#include "mmas.hpp"
 
-First::First(double pbeta, double prho, long int pseed, bool puse_local_search) : ACO(pbeta, prho, pseed) {
+MMAS::MMAS(double pbeta, double prho, long int pseed, bool puse_local_search) : ACO(pbeta, prho, pseed) {
     use_local_search = puse_local_search;
 }
 
-First::~First() {
+MMAS::~MMAS() {
 }
 
 /** Construction phase **/
-void First::construct(Ant *current_ant) {
+void MMAS::construct(Ant *current_ant) {
     long int i, j, char_idx;
     double sum_prob, choice;
     long int string_length = inst->getStringLength();
@@ -38,7 +38,7 @@ void First::construct(Ant *current_ant) {
 }
 
 /** Updating of pheromone trails of sets **/
-void First::global_pheromone_update(Ant *global_best, double tau_min, double tau_max) {
+void MMAS::global_pheromone_update(Ant *global_best, double tau_min, double tau_max) {
     long int j;
     long int string_length = inst->getStringLength();
     long int alphabet_size = inst->getAlphabetSize();
@@ -63,7 +63,7 @@ void First::global_pheromone_update(Ant *global_best, double tau_min, double tau
     return;
 }
 
-void First::local_search(Ant * ant) {
+void MMAS::local_search(Ant * ant) {
     long int orig_char_idx, j;
     long int alphabet_size = inst->getAlphabetSize();
     long int orig_solq = ant->getSolutionQuality();
@@ -85,7 +85,7 @@ void First::local_search(Ant * ant) {
 }
 
 //Local search v2
-void First::local_search2(Ant * ant) {
+void MMAS::local_search2(Ant * ant) {
     long int str_dist, str_dist_n;
     long int * string_distances = ant->getStringDistances();
     long int n_strings = inst->getNumberOfStrings();
@@ -97,7 +97,7 @@ void First::local_search2(Ant * ant) {
 }
 
 /** Execute aco algorithm **/
-Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
+Solution * MMAS::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
     long int i;
     bool improvement;
     long int iterations_no_improvement = 0;

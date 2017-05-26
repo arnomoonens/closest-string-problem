@@ -10,7 +10,7 @@
 
 #include "instance.hpp"
 #include "aco.hpp"
-#include "first.hpp"
+#include "mmas.hpp"
 #include "acs.hpp"
 #include "solution.hpp"
 
@@ -147,7 +147,7 @@ int main(int argc, char *argv[] ){
 //    inst->print();
     ACO * algo;
     if (strcmp(algorithm, "first") == 0) {
-        algo = new First(beta, rho, seed, use_local_search);
+        algo = new MMAS(beta, rho, seed, use_local_search);
     } else {
         algo = new ACS(beta, rho, exploitation_prob, use_local_search, seed);
     }
