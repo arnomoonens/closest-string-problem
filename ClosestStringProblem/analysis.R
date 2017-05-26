@@ -28,18 +28,24 @@ acs.results$Instance <- NULL
 
 # Best (B), worst (W), mean (M) and standard deviation (SD) for both algorithms
 mmas.stats <- data.frame(
+  instance=rownames(mmas.results),
   B=apply(mmas.results, 1, min),
   W=apply(mmas.results, 1, max),
   M=apply(mmas.results, 1, mean),
   SD=apply(mmas.results, 1, sd)
   )
+rownames(mmas.stats) <- NULL
+write.csv(mmas.stats, paste0(results.folder, "/mmas-results.csv"), row.names = FALSE)
 
 acs.stats <- data.frame(
+  instance=rownames(acs.results),
   B=apply(acs.results, 1, min),
   W=apply(acs.results, 1, max),
   M=apply(acs.results, 1, mean),
   SD=apply(acs.results, 1, sd)
 )
+rownames(acs.stats) <- NULL
+write.csv(acs.stats, paste0(results.folder, "/acs-results.csv"), row.names = FALSE)
 
 rpd <- function(x) ((x - upb) * 100) / upb
 
