@@ -98,8 +98,9 @@ void First::local_search2(Ant * ant) {
 
 /** Execute aco algorithm **/
 Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    long int i, j;
+    long int i;
     bool improvement;
+    long int iterations_no_improvement = 0;
     inst = instance;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
@@ -107,13 +108,7 @@ Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solu
     long int string_length = inst->getStringLength();
     double tau_max = (double) 1 / (double) alphabet_size;
     double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
-    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
-    probability = (double **) malloc(alphabet_size * sizeof(double *));
-    for (i = 0; i < alphabet_size; i++) {
-        pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
-        probability[i] = (double *) malloc(string_length * sizeof(double));
-    }
+    initialize_pheromone_trails(tau_max);
     while(!termination_criterion(global_best)) {
         improvement = false;
         for (i = 0; i < nants; i++) { // For each ant...
@@ -135,10 +130,19 @@ Solution * First::execute(Instance *instance, bool (*termination_criterion)(Solu
                 delete ants[i];
             }
         }
-//        if (improvement) {
+        if (improvement) { // New global best
+            iterations_no_improvement = 0;
 //            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
 //            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
-//        }
+        } else {
+            iterations_no_improvement++;
+            if(iterations_no_improvement % 100 == 0) {
+#if DEBUG
+                printf("REINIT\n");
+#endif
+                initialize_pheromone_trails(tau_max);
+            }
+        }
         global_pheromone_update(global_best, tau_min, tau_max);
     }
     // free all arrays

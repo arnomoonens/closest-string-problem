@@ -32,6 +32,7 @@ protected:
          /** Number of strings that have character x at idx **/
         return (double) inst->getStringsPerCharCount()[idx][char_idx];
     };
+    void initialize_pheromone_trails(double tau_init);
     void calculate_probability();
     void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 

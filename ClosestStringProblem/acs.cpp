@@ -102,24 +102,16 @@ void ACS::local_search(Ant * ant) {
 
 /** Execute aco algorithm **/
 Solution * ACS::execute(Instance *instance, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) {
-    long int i, j;
+    long int i;
     bool improvement;
     inst = instance;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
     long int alphabet_size = inst->getAlphabetSize();
-    long int string_length = inst->getStringLength();
     double tau_max = (double) 1 / (double) alphabet_size;
 //    double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     tau_init = 1.0; // 1.0 as in the paper (instead of tau_max)
-    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
-    probability = (double **) malloc(alphabet_size * sizeof(double *));
-    for (i = 0; i < alphabet_size; i++) {
-        pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
-        for (j = 0; j < string_length; j++) pheromone_trails[i][j] = tau_max;
-        probability[i] = (double *) malloc(string_length * sizeof(double));
-    }
-    calculate_probability();
+    initialize_pheromone_trails(tau_max);
     while(!termination_criterion(global_best)) {
         improvement = false;
         for (i = 0; i < nants; i++) { // For each ant...
