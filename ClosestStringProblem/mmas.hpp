@@ -1,13 +1,13 @@
 //
-//  first.hpp
+//  mmas.hpp
 //  ClosestStringProblem
 //
 //  Created by Arno Moonens on 9/05/17.
 //  Copyright © 2017 Arno Moonens. All rights reserved.
 //
 
-#ifndef first_hpp
-#define first_hpp
+#ifndef mmas_hpp
+#define mmas_hpp
 
 #include <stdio.h>
 #include <math.h>
@@ -36,4 +36,4 @@ public:
 
 
 
-#endif /* first_hpp */
+#endif /* mmas_hpp */

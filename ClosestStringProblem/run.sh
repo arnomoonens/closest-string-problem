@@ -17,7 +17,7 @@ resultsfolder=$3
 
 mkdir -p $resultsfolder
 
-algos=(first acs)
+algos=(mmas acs)
 
 for algo in "${algos[@]}"
 do
@@ -41,7 +41,7 @@ done
 
 
 # Local search
-# Applying local search to the first one
+# Applying local search to the first one (MMAS)
 algo=${algos[1]}
 destinationfile="$resultsfolder/$algo-ls.txt"
 printf "" > $destinationfile

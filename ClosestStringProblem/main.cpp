@@ -29,10 +29,10 @@ char * algorithm;
 
 void printHelp(){
     std::cout << "\nACO Usage:\n"
-    << "   ./aco [--algo <first|acs>] [--ants <int>] [--alpha <float>] [--beta <float>] [--rho <float>] [--iterations <int>] [--seed <int>] [--ls] [--exploitation <float>] --instance <path>\n\n"
+    << "   ./aco [--algo <mmas|acs>] [--ants <int>] [--alpha <float>] [--beta <float>] [--rho <float>] [--iterations <int>] [--seed <int>] [--ls] [--exploitation <float>] --instance <path>\n\n"
     << "Example: ./aco --tours 2000 --seed 123 --instance eil151.tsp\n\n"
     << "\nACO flags:\n"
-    << "   --algo: Algorithm to use. Can be \"first\" or \"acs\". Default=\"first\".\n"
+    << "   --algo: Algorithm to use. Can be \"mmas\" or \"acs\". Default=\"mmas\".\n"
     << "   --ants: Number of ants to build every iteration. Default=10.\n"
     << "   --alpha: Alpha parameter (float). Default=1.\n"
     << "   --beta: Beta parameter (float). Default=1.\n"
@@ -58,7 +58,7 @@ void setDefaultParameters(){
     seed=seed = (long int) time(NULL);
     use_local_search = false;
     exploitation_prob = 0.9;
-    algorithm = (char *) "first";
+    algorithm = (char *) "mmas";
 }
 
 /*Print default parameters*/
@@ -146,7 +146,7 @@ int main(int argc, char *argv[] ){
     Instance * inst = new Instance(instance_file);
 //    inst->print();
     ACO * algo;
-    if (strcmp(algorithm, "first") == 0) {
+    if (strcmp(algorithm, "mmas") == 0) {
         algo = new MMAS(beta, rho, seed, use_local_search);
     } else {
         algo = new ACS(beta, rho, exploitation_prob, use_local_search, seed);
