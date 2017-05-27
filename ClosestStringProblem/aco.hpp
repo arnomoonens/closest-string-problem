@@ -21,7 +21,6 @@ class ACO {
     
 protected:
     long int seed;
-    double beta;
     double rho;
     Instance * inst;
     double **pheromone_trails;
@@ -32,12 +31,12 @@ protected:
          /** Number of strings that have character x at idx **/
         return (double) inst->getStringsPerCharCount()[idx][char_idx];
     };
-    void initialize_pheromone_trails(double tau_init);
+    virtual void initialize_pheromone_trails(double tau_init) = 0;
     void calculate_probability();
     void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 
 public:
-    ACO(double pbeta, double prho, long int pseed);
+    ACO(double prho, long int pseed);
     ~ACO();
     virtual Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants) = 0;
 };

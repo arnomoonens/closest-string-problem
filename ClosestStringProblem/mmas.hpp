@@ -21,15 +21,19 @@ typedef Solution Ant;
 
 class MMAS : public ACO {
     
+    double alpha;
+    double beta;
     bool use_local_search;
     
     void construct(Ant *current_ant);
+    void initialize_pheromone_trails(double tau_init);
+    void calculate_probability();
     void local_search(Ant * ant);
     void local_search2(Ant * ant);
     void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 
 public:
-    MMAS(double pbeta, double prho, long int pseed, bool puse_local_search);
+    MMAS(double palpha, double pbeta, double prho, long int pseed, bool puse_local_search);
     ~MMAS();
     Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
 };

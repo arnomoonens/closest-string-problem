@@ -30,7 +30,7 @@ char * algorithm;
 void printHelp(){
     std::cout << "\nACO Usage:\n"
     << "   ./aco [--algo <mmas|acs>] [--ants <int>] [--alpha <float>] [--beta <float>] [--rho <float>] [--iterations <int>] [--seed <int>] [--ls] [--exploitation <float>] --instance <path>\n\n"
-    << "Example: ./aco --tours 2000 --seed 123 --instance eil151.tsp\n\n"
+    << "Example: ./aco --tours 2000 --seed 123 --instance 2-30-10000-1-9.csp\n\n"
     << "\nACO flags:\n"
     << "   --algo: Algorithm to use. Can be \"mmas\" or \"acs\". Default=\"mmas\".\n"
     << "   --ants: Number of ants to build every iteration. Default=10.\n"
@@ -55,7 +55,7 @@ void setDefaultParameters(){
     n_ants=10;
     max_iterations=500;
     instance_file=NULL;
-    seed=seed = (long int) time(NULL);
+    seed = (long int) time(NULL);
     use_local_search = false;
     exploitation_prob = 0.9;
     algorithm = (char *) "mmas";
@@ -147,7 +147,7 @@ int main(int argc, char *argv[] ){
 //    inst->print();
     ACO * algo;
     if (strcmp(algorithm, "mmas") == 0) {
-        algo = new MMAS(beta, rho, seed, use_local_search);
+        algo = new MMAS(alpha, beta, rho, seed, use_local_search);
     } else {
         algo = new ACS(beta, rho, exploitation_prob, use_local_search, seed);
     }

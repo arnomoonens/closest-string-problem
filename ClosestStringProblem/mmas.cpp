@@ -8,7 +8,9 @@
 
 #include "mmas.hpp"
 
-MMAS::MMAS(double pbeta, double prho, long int pseed, bool puse_local_search) : ACO(pbeta, prho, pseed) {
+MMAS::MMAS(double palpha, double pbeta, double prho, long int pseed, bool puse_local_search) : ACO(prho, pseed) {
+    alpha = palpha;
+    beta = pbeta;
     use_local_search = puse_local_search;
 }
 
@@ -37,6 +39,34 @@ void MMAS::construct(Ant *current_ant) {
     return;
 }
 
+void MMAS::initialize_pheromone_trails(double tau_init) {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    probability = (double **) malloc(alphabet_size * sizeof(double *));
+    for (i = 0; i < alphabet_size; i++) {
+        pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
+        probability[i] = (double *) malloc(string_length * sizeof(double));
+        for (j = 0; j < string_length; j++) {
+            pheromone_trails[i][j] = tau_init;
+            probability[i][j] = pow(pheromone_trails[i][j], alpha) * pow(heuristic_information(j, i), beta); // Update probabilities
+        }
+    }
+}
+
+void MMAS::calculate_probability() {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    for (i = 0; i < alphabet_size; i++) {
+        for (j = 0; j < string_length; j++) {
+            probability[i][j] = pow(pheromone_trails[i][j], alpha) * pow(heuristic_information(j, i), beta);
+        }
+    }
+}
+
+
 /** Updating of pheromone trails of sets **/
 void MMAS::global_pheromone_update(Ant *global_best, double tau_min, double tau_max) {
     long int j;
@@ -57,7 +87,7 @@ void MMAS::global_pheromone_update(Ant *global_best, double tau_min, double tau_
             } else if (pheromone_trails[j][i] > tau_max) {
                 pheromone_trails[j][i] = tau_max;
             }
-            probability[j][i] = pheromone_trails[j][i] * pow(heuristic_information(i, j), beta); // Update probabilities
+            probability[j][i] = pow(pheromone_trails[j][i], alpha) * pow(heuristic_information(i, j), beta); // Update probabilities
         }
     }
     return;

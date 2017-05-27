@@ -8,7 +8,8 @@
 
 #include "acs.hpp"
 
-ACS::ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed) : ACO(pbeta, prho, pseed) {
+ACS::ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed) : ACO(prho, pseed) {
+    beta = pbeta;
     exploitation_prob = pexploitation_prob;
     use_local_search = puse_local_search;
 }
@@ -78,6 +79,34 @@ void ACS::global_pheromone_update(Ant *global_best) {
     }
     return;
 }
+
+void ACS::initialize_pheromone_trails(double tau_init) {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    pheromone_trails = (double **) malloc(alphabet_size * sizeof(double *));
+    probability = (double **) malloc(alphabet_size * sizeof(double *));
+    for (i = 0; i < alphabet_size; i++) {
+        pheromone_trails[i] = (double *) malloc(string_length * sizeof(double));
+        probability[i] = (double *) malloc(string_length * sizeof(double));
+        for (j = 0; j < string_length; j++) {
+            pheromone_trails[i][j] = tau_init;
+            probability[i][j] = pheromone_trails[i][j] * pow(heuristic_information(j, i), beta); // Update probabilities
+        }
+    }
+}
+
+void ACS::calculate_probability() {
+    long int i, j;
+    long int alphabet_size = inst->getAlphabetSize();
+    long int string_length = inst->getStringLength();
+    for (i = 0; i < alphabet_size; i++) {
+        for (j = 0; j < string_length; j++) {
+            probability[i][j] = pheromone_trails[i][j] * pow(heuristic_information(j, i), beta);
+        }
+    }
+}
+
 
 void ACS::local_search(Ant * ant) {
     long int orig_char_idx, j;

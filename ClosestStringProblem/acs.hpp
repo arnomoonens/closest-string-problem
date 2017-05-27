@@ -16,11 +16,14 @@
 
 class ACS : public ACO {
     double exploitation_prob;
+    double beta;
     bool use_local_search;
     double tau_init;
     
     void construct(Ant *current_ant);
     void local_search(Ant * ant);
+    void initialize_pheromone_trails(double tau_init);
+    void calculate_probability();
     void local_pheromone_update(Ant *global_best, long int idx, long int char_idx);
     void global_pheromone_update(Ant *global_best);
     
