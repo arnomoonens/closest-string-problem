@@ -50,8 +50,15 @@ write.csv(acs.stats, paste0(results.folder, "/acs-results.csv"), row.names = FAL
 rpd <- function(x) ((x - upb) * 100) / upb
 
 # Relative percentage deviation (between mean and upper best) for both algorithms
-rpd(mmas.stats[,"M"])
-rpd(acs.stats[,"M"])
+mmas.deviations <- apply(X = mmas.results, 2, rpd)
+acs.deviations <- apply(X = acs.results, 2, rpd)
 
+deviations <- data.frame(
+  instance=rownames(mmas.deviations),
+  MMAS=apply(mmas.deviations, 1, mean),
+  ACS=apply(acs.deviations, 1, mean)
+)
+write.csv(format(deviations, digits=3), paste0(results.folder, "/rpd.csv"), row.names = FALSE, quote= FALSE)
+  
 # Wilcoxon test
 wilcox.test(mmas.stats[,"M"], acs.stats[,"M"])
