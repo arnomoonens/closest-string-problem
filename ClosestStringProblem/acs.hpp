@@ -28,9 +28,9 @@ class ACS : public ACO {
     void global_pheromone_update(Ant *global_best);
     
 public:
-    ACS(double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed);
+    ACS(Instance * pinst, double pbeta, double prho, double pexploitation_prob, bool puse_local_search, long int pseed);
     ~ACS();
-    Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
+    Solution * execute(bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
 };
 
 #endif /* acs_hpp */

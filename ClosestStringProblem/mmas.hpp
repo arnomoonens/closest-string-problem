@@ -33,9 +33,9 @@ class MMAS : public ACO {
     void global_pheromone_update(Ant *global_best, double tau_min, double tau_max);
 
 public:
-    MMAS(double palpha, double pbeta, double prho, long int pseed, bool puse_local_search);
+    MMAS(Instance * pinst, double palpha, double pbeta, double prho, long int pseed, bool puse_local_search);
     ~MMAS();
-    Solution * execute(Instance *inst, bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
+    Solution * execute(bool (*termination_criterion)(Solution *), void (*notify_improvement)(Solution *), long int nants);
 };
 
 

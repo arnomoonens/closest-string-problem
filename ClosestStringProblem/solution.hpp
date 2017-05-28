@@ -10,6 +10,7 @@
 #define solution_hpp
 
 #include <stdio.h>
+#include <cstring>
 
 #include "instance.hpp"
 
@@ -17,7 +18,6 @@ class Solution {
     char * string;
     long int * string_indices;
     long int * string_distances; // Distance of every instance string to the solution string
-    long int string_max_dist_index;
     long int fx; // Solution quality = max(string_distances)
     Instance * inst;
     
@@ -25,6 +25,7 @@ public:
     Solution(Instance * pinst);
     ~Solution();
     long int getSolutionQuality() {return fx;};
+    void computeSolutionQuality();
     void setSolutionQuality(long int sq) {fx = sq; return;};
     long int * getStringIndices() {return string_indices;};
     long int * getStringDistances() {return string_distances;};

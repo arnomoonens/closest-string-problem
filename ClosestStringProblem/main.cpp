@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <string.h>
 
 #include "instance.hpp"
 #include "aco.hpp"
@@ -147,13 +148,14 @@ int main(int argc, char *argv[] ){
 //    inst->print();
     ACO * algo;
     if (strcmp(algorithm, "mmas") == 0) {
-        algo = new MMAS(alpha, beta, rho, seed, use_local_search);
+        algo = new MMAS(inst, alpha, beta, rho, seed, use_local_search);
     } else {
-        algo = new ACS(beta, rho, exploitation_prob, use_local_search, seed);
+        algo = new ACS(inst, beta, rho, exploitation_prob, use_local_search, seed);
     }
-    Solution * sol = algo->execute(inst, termination_criterion, notify_improvement, n_ants);
+    Solution * sol = algo->execute(termination_criterion, notify_improvement, n_ants);
     printf("%li", sol->getSolutionQuality());
     delete sol;
+    delete algo;
     delete inst;
     return 0;
 }

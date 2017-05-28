@@ -21,8 +21,6 @@ class Instance {
     long int l; // string length
     char * alphabet; // k characters
     char ** strings; // n strings
-    long int *** char_to_string;
-    long int ** strings_per_char_count;
     
 public:
     Instance(const char * csp_file_name);
@@ -32,8 +30,6 @@ public:
     long int getStringLength() {return l;};
     char * getAlphabet() {return alphabet;};
     char ** getStrings() {return strings;};
-    long int ** getStringsPerCharCount() {return strings_per_char_count;};
-    long int *** getCharToString() {return char_to_string;};
     void print();
 };
 
