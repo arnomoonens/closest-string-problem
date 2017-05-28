@@ -10,7 +10,10 @@ if (length(args)<2) {
 }
 
 results.folder <- args[1]
-optimals <- read.table(file=args[2], header=TRUE, sep=";") 
+optimals <- read.table(file=args[2], header=TRUE, sep=";", row.names = "filename") 
+row.names(optimals) <- sapply(row.names(optimals), function(x) substr(x, 0, nchar(x) - 4))
+optimals <- optimals[order(row.names(optimals)),] # sort by instance name
+
 upb <- optimals[,"ub"]
 
 mmas.results.file <- paste0(results.folder, "/mmas.txt")
@@ -20,11 +23,13 @@ mmas.results <- read.csv(mmas.results.file, header = FALSE)
 colnames(mmas.results) <- c("Instance", 1:10)
 rownames(mmas.results) <- mmas.results$Instance
 mmas.results$Instance <- NULL
+mmas.results <- mmas.results[order(row.names(mmas.results)),] # sort by instance name
 
 acs.results <- read.csv(acs.results.file, header = FALSE)
 colnames(acs.results) <- c("Instance", 1:10)
 rownames(acs.results) <- acs.results$Instance
 acs.results$Instance <- NULL
+acs.results <- acs.results[order(row.names(acs.results)),] # sort by instance name
 
 # Best (B), worst (W), mean (M) and standard deviation (SD) for both algorithms
 mmas.stats <- data.frame(
