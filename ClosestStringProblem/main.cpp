@@ -83,9 +83,7 @@ bool termination_criterion(Solution *sol) {
 
 /** Callback when better solution is encountered: write time and quality to file **/
 void notify_improvement(Solution * sol) {
-#if DEBUG
     printf("%li %li\n", iterations, sol->getSolutionQuality());
-#endif
     return;
 }
 
@@ -153,7 +151,7 @@ int main(int argc, char *argv[] ){
         algo = new ACS(inst, beta, rho, exploitation_prob, use_local_search, seed);
     }
     Solution * sol = algo->execute(termination_criterion, notify_improvement, n_ants);
-    printf("%li", sol->getSolutionQuality());
+    printf("%li\n", sol->getSolutionQuality());
     delete sol;
     delete algo;
     delete inst;
