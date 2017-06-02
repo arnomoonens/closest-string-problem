@@ -145,10 +145,8 @@ Solution * MMAS::execute(bool (*termination_criterion)(Solution *), void (*notif
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;
-                notify_improvement(ants[i]);
             } else if (ants[i]->getSolutionQuality() <= global_best->getSolutionQuality()) {
                 if (ants[i]->getSolutionQuality() < global_best->getSolutionQuality()) {
-                    notify_improvement(ants[i]);
                     improvement = true;
                 }
                 delete global_best;
@@ -158,6 +156,7 @@ Solution * MMAS::execute(bool (*termination_criterion)(Solution *), void (*notif
             }
         }
         if (improvement) { // New global best
+            notify_improvement(global_best);
             iterations_no_improvement = 0;
 //            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
 //            tau_min = tau_max / ((double) alphabet_size * (double) string_length);

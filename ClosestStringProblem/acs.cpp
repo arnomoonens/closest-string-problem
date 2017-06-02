@@ -147,10 +147,8 @@ Solution * ACS::execute(bool (*termination_criterion)(Solution *), void (*notify
             if (!global_best) {
                 global_best = ants[i];
                 improvement = true;
-                notify_improvement(ants[i]);
             } else if (ants[i]->getSolutionQuality() <= global_best->getSolutionQuality()) {
                 if (ants[i]->getSolutionQuality() < global_best->getSolutionQuality()) {
-                    notify_improvement(ants[i]);
                     improvement = true;
                 }
                 delete global_best;
@@ -159,10 +157,7 @@ Solution * ACS::execute(bool (*termination_criterion)(Solution *), void (*notify
                 delete ants[i];
             }
         }
-        //        if (improvement) {
-        //            tau_max = (double) 1 / (double) global_best->getSolutionQuality();
-        //            tau_min = tau_max / ((double) alphabet_size * (double) string_length);
-        //        }
+                if (improvement) notify_improvement(global_best);
         global_pheromone_update(global_best);
     }
     free((void *) ants);
