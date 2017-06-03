@@ -71,22 +71,26 @@ cat("Wilcoxon rank sum test for MMAS and ACS")
 print(wilcox.test(unlist(mmas.results), unlist(acs.results), paired = T))
 
 # Convergence
-algo <- "mmas"
-instance <- "4-30-10000-2-0"
-run <- 10
-mmas.run <- read.table(paste0(results.folder, "/", algo, "/", instance, "-", run, ".txt"), fill = T)
-mmas.run <- mmas.run[complete.cases(mmas.run),]
-mmas.run <- merge(expand.grid(V1 = 1:1000), mmas.run, all = T)
-rownames(mmas.run) <- mmas.run$V1
-mmas.run$V1 <- NULL
-colnames(mmas.run) <- c("cost")
-# Fill solution qualities for iterations without improvement.
-# Source: http://www.cookbook-r.com/Manipulating_data/Filling_in_NAs_with_last_non-NA_value/
-goodIdx <- !is.na(mmas.run)
-goodVals <- c(NA, mmas.run[goodIdx])
-fillIdx <- cumsum(goodIdx)+1
-mmas.run$cost <- goodVals[fillIdx]
-plot(rownames(mmas.run), mmas.run$cost, type = "l", xlab="Iteration", ylab="Cost")
+plot.convergence <- function(algo, instance, run) {
+  run.data <- read.table(paste0(results.folder, "/", algo, "/", instance, "-", run, ".txt"), fill = T)
+  run.data <- run.data[complete.cases(run.data),]
+  run.data <- merge(expand.grid(V1 = 1:1000), run.data, all = T)
+  rownames(run.data) <- run.data$V1
+  run.data$V1 <- NULL
+  colnames(run.data) <- c("cost")
+  # Fill solution qualities for iterations without improvement.
+  # Source: http://www.cookbook-r.com/Manipulating_data/Filling_in_NAs_with_last_non-NA_value/
+  goodIdx <- !is.na(run.data)
+  goodVals <- c(NA, run.data[goodIdx])
+  fillIdx <- cumsum(goodIdx)+1
+  run.data$cost <- goodVals[fillIdx]
+  plot(rownames(run.data), run.data$cost, type = "l", xlab="Iteration", ylab="Cost")
+}
+instance <- "2-30-10000-1-9"
+run <- 1
+plot.convergence("mmas", instance, run)
+plot.convergence("acs", instance, run)
+
 
 ## Local search
 mmas.ls.deviations <- apply(X = mmas.ls.results, 2, rpd)
