@@ -67,30 +67,37 @@ deviations <- data.frame(
 )
 write.csv(format(deviations, digits=3), paste0(results.folder, "/rpd.csv"), row.names = FALSE, quote= FALSE)
 
+boxplot(c(mmas.deviations, recursive = TRUE), ylim=c(0,1.3))
+boxplot(c(acs.deviations, recursive = TRUE), ylim=c(0,1.3))
+
 cat("Wilcoxon rank sum test for MMAS and ACS")
 print(wilcox.test(unlist(mmas.results), unlist(acs.results), paired = T))
 
 # Convergence
-plot.convergence <- function(algo, instance, run) {
-  run.data <- read.table(paste0(results.folder, "/", algo, "/", instance, "-", run, ".txt"), fill = T)
-  run.data <- run.data[complete.cases(run.data),]
-  run.data <- merge(expand.grid(V1 = 1:1000), run.data, all = T)
-  rownames(run.data) <- run.data$V1
-  run.data$V1 <- NULL
-  colnames(run.data) <- c("cost")
-  # Fill solution qualities for iterations without improvement.
-  # Source: http://www.cookbook-r.com/Manipulating_data/Filling_in_NAs_with_last_non-NA_value/
-  goodIdx <- !is.na(run.data)
-  goodVals <- c(NA, run.data[goodIdx])
-  fillIdx <- cumsum(goodIdx)+1
-  run.data$cost <- goodVals[fillIdx]
-  plot(rownames(run.data), run.data$cost, type = "l", xlab="Iteration", ylab="Cost")
+plot.convergence <- function(algo, instance, ylim) {
+  data <- data.frame(row.names = c(1:1000)) # assume 1000 iterations
+  for(run in c(1:10)) {
+    run.data <- read.table(paste0(results.folder, "/", algo, "/", instance, "-", run, ".txt"), fill = T)
+    run.data <- run.data[complete.cases(run.data),]
+    run.data <- merge(expand.grid(V1 = 1:1000), run.data, all = T)
+    rownames(run.data) <- run.data$V1
+    run.data$V1 <- NULL
+    colnames(run.data) <- c("cost")
+    # Fill solution qualities for iterations without improvement.
+    # Source: http://www.cookbook-r.com/Manipulating_data/Filling_in_NAs_with_last_non-NA_value/
+    goodIdx <- !is.na(run.data)
+    goodVals <- c(NA, run.data[goodIdx])
+    fillIdx <- cumsum(goodIdx)+1
+    run.data$cost <- goodVals[fillIdx]
+    data[run] <- run.data$cost
+  }
+  means <- apply(data, 1, mean)
+  plot(rownames(data), means, type = "l", xlab="Iteration", ylab="Cost", ylim = ylim)
 }
 instance <- "2-30-10000-1-9"
-run <- 1
-plot.convergence("mmas", instance, run)
-plot.convergence("acs", instance, run)
-
+ylim <- c(4290, 4470)
+plot.convergence("mmas", instance, ylim)
+plot.convergence("acs", instance, ylim)
 
 ## Local search
 mmas.ls.deviations <- apply(X = mmas.ls.results, 2, rpd)
@@ -102,6 +109,13 @@ deviations.mmas.ls <- data.frame(
 )
 write.csv(format(deviations.mmas.ls, digits=3), paste0(results.folder, "/rpd-ls.csv"), row.names = FALSE, quote= FALSE)
 
+boxplot(c(mmas.deviations, recursive = TRUE), ylim=c(0,1))
+boxplot(c(mmas.ls.deviations, recursive = TRUE), ylim=c(0,1))
+
 # Wilcoxon test
 cat("Wilcoxon rank sum test for MMAS and MMAS with local search")
 print(wilcox.test(unlist(mmas.results), unlist(mmas.ls.results), paired = T))
+
+ylim=c(4280,4470)
+plot.convergence("mmas", instance, ylim)
+plot.convergence("mmas-ls", instance, ylim)
