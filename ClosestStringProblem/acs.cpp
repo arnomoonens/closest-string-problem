@@ -132,12 +132,9 @@ Solution * ACS::execute(bool (*termination_criterion)(Solution *), void (*notify
     bool improvement;
     Ant *global_best = NULL;
     Ant **ants = (Ant **) malloc(nants * sizeof(Ant *));
-    long int alphabet_size = inst->getAlphabetSize();
-    double tau_max = (double) 1 / (double) alphabet_size;
-//    double tau_min = tau_max / ((double) alphabet_size * (double) string_length);
     tau_init = 1.0; // 1.0 as in the paper (instead of tau_max)
     compute_heuristic_information(inst);
-    initialize_pheromone_trails(tau_max);
+    initialize_pheromone_trails(tau_init);
     while(!termination_criterion(global_best)) {
         improvement = false;
         for (i = 0; i < nants; i++) { // For each ant...
