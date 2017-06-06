@@ -4,7 +4,7 @@
 
 First, the C++ code needs to be compiled. This can be done in the terminal by executing (when being in the directory with the code):
 ```
-g++ *.cpp CSP
+g++ *.cpp -o CSP
 ```
 his should result in a binary file called CSP. Some parameters can be passed to this file to influence the working of the program. These parameters are:
 - `--algo <string>`: Algorithm to use. Can be `mmas` or `acs`. The default is `mmas`.
