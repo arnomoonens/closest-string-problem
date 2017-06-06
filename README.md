@@ -1,4 +1,4 @@
-# Closest string problem
+# Swarm Intelligence project: Closest string problem
 
 ## Usage
 
@@ -12,7 +12,7 @@ his should result in a binary file called CSP. Some parameters can be passed to 
 - `--alpha <float>`: Alpha parameter (float). The default is 1.
 - `--beta <float>`: Beta parameter (float). The default is 1.
 - `--rho <float>`: Rho parameter (float). The default is 0.2.
-- `--iterations <int>`: Maximum number of iterations to perform (interger). The default is 0 (disabled).
+- `--iterations <int>`: Maximum number of iterations to perform (integer). The default is 0 (disabled).
 - `--seed <int>`: Number for the random seed generator.
 - `--ls`: Use local search. If this parameter isn't given, local search is disabled.
 - `--exploitation <float>`: Exploitation probability. The default is 0.9.
@@ -25,3 +25,4 @@ Rscript analysis.R
     /PATH/TO/instances.opt
 ```
 Some results of the analysis are printed and some are saved in the results directory that was passed to the program.
+

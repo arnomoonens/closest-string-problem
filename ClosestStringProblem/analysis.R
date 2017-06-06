@@ -1,8 +1,5 @@
-
-# Uncomment to use in RStudio
-commandArgs <- function (trailingOnly=FALSE) {
-  c("/Users/arnomoonens/Dropbox/MA2-AI/Swarm_Intelligence/project/results", "/Users/arnomoonens/Dropbox/MA2-AI/Swarm_Intelligence/project/instances/instances_opt.txt")
-}
+# Analysis Swarm Intelligence project
+# By Arno Moonens
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)<2) {
@@ -67,8 +64,14 @@ deviations <- data.frame(
 )
 write.csv(format(deviations, digits=3), paste0(results.folder, "/rpd.csv"), row.names = FALSE, quote= FALSE)
 
-boxplot(c(mmas.deviations, recursive = TRUE), ylim=c(0,1.3))
-boxplot(c(acs.deviations, recursive = TRUE), ylim=c(0,1.3))
+mmas.deviations.flat <- c(mmas.deviations, recursive = TRUE)
+acs.deviations.flat <- c(acs.deviations, recursive = TRUE)
+boxplots <- boxplot(mmas.deviations.flat, acs.deviations.flat, names=c("MMAS", "ACS"))
+
+cat("MMAS and ACS statistics:")
+print(boxplots$stats)
+
+cat("Medians of MMAS and ACS", boxplots$stats[3,], "\n")
 
 cat("Wilcoxon rank sum test for MMAS and ACS")
 print(wilcox.test(unlist(mmas.results), unlist(acs.results), paired = T))
@@ -109,8 +112,13 @@ deviations.mmas.ls <- data.frame(
 )
 write.csv(format(deviations.mmas.ls, digits=3), paste0(results.folder, "/rpd-ls.csv"), row.names = FALSE, quote= FALSE)
 
-boxplot(c(mmas.deviations, recursive = TRUE), ylim=c(0,1))
-boxplot(c(mmas.ls.deviations, recursive = TRUE), ylim=c(0,1))
+mmas.ls.deviations.flat <- c(mmas.ls.deviations, recursive = TRUE)
+boxplots.ls <- boxplot(mmas.deviations.flat, mmas.ls.deviations.flat, names=c("MMAS", "MMAS local search"))
+
+cat("MMAS and MMAS with LS statistics:")
+print(boxplots.ls$stats)
+
+cat("Medians of MMAS and MMAS with LS", boxplots.ls$stats[3,], "\n")
 
 # Wilcoxon test
 cat("Wilcoxon rank sum test for MMAS and MMAS with local search")
